@@ -1,9 +1,10 @@
+import Header from '@/app/Components/Header/Header'
 import React from 'react'
 
 const page = () => {
   return (
-    <div>
-      main
+    <div className='flex justify-center py-[40px]'>
+      <Header />
     </div>
   )
 }

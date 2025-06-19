@@ -6,9 +6,6 @@ const Login = () => {
   return (
     <div
       className="w-full h-screen flex flex-col gap-[48px] items-center justify-center"
-      style={{
-        background: "linear-gradient(180deg, #FAFAFF 72.99%, #E0E0FF 100%)",
-      }}
     >
       <MoodTrackerLogo />
       <div className="max-w-[530px] px-[40px] py-[32px] flex flex-col justify-between gap-[30px] rounded-[16px] bg-white shadow-lg">
