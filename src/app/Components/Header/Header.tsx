@@ -10,7 +10,8 @@ const Header = () => {
   const [modal, setModal] = useState(false);
 
   return (
-    <div className="w-[1170px] flex items-center justify-between relative">
+    <div className="flex flex-col items-center gap-[64px]">
+        <div className="w-[1170px] flex items-center justify-between relative">
       <MoodTrackerLogo />
 
       <div onClick={() => setModal(prev => !prev)} className="flex gap-[10px] items-center cursor-pointer">
@@ -46,6 +47,22 @@ const Header = () => {
           </div>
         </div>
       )}
+    </div>
+
+
+    <div className="flex flex-col justify-between w-[656px] items-center gap-[64px]">
+      <div className="flex flex-col items-center justify-center gap-[10px]">
+              <p className="text-[#4865DB] text-[32px]">Hello, Lisa!</p>
+      <p className="text-[#21214D] text-[52px]">How are you feeling today?</p>
+      <p className="text-[#57577B] text-[18px]">Wednesday, April 16th, 2025</p>
+      </div>
+
+
+      <div className="py-[16px] px-[32px] rounded-[10px] bg-[#4865DB] w-fit cursor-pointer">
+      <p className="text-white text-[20px]">Log today's mood</p>
+      </div>
+    </div>
+
     </div>
   );
 };
