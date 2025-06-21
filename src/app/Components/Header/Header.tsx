@@ -5,9 +5,11 @@ import MoodTrackerLogo from "@/app/Common/Images/MoodTrackerLogo";
 import SettingsIcon from "@/app/Common/Images/SettingsIcon";
 import Image from "next/image";
 import React, { useState } from "react";
+import MoodSelectModal from "../MoodSelectModal/MoodSelectModal";
 
 const Header = () => {
   const [modal, setModal] = useState(false);
+  const [LogModal,SetLogModal] = useState(false)
 
   return (
     <div className="flex flex-col items-center gap-[64px]">
@@ -58,10 +60,13 @@ const Header = () => {
       </div>
 
 
-      <div className="py-[16px] px-[32px] rounded-[10px] bg-[#4865DB] w-fit cursor-pointer">
+      <div onClick={()=> SetLogModal(true)} className="py-[16px] px-[32px] rounded-[10px] bg-[#4865DB] w-fit cursor-pointer">
       <p className="text-white text-[20px]">Log today's mood</p>
       </div>
     </div>
+
+
+    {LogModal && <MoodSelectModal SetLogModal={SetLogModal} LogModal={LogModal} />}
 
     </div>
   );
