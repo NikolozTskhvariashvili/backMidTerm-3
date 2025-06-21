@@ -1,5 +1,5 @@
 "use client";
-import { Contex } from "@/app/(pages)/main/page";
+import { Context } from "@/app/(pages)/main/Page";
 import React, { useContext } from "react";
 import {
   BarChart,
@@ -21,7 +21,7 @@ const moodColorMap: Record<string, string> = {
 };
 
 const MoodInformations = () => {
-  const { data } = useContext(Contex);
+  const { data } = useContext(Context);
   const last11Data = Array.isArray(data) ? data.slice(-11) : [];
   return (
     <div className="flex gap-[32px]">

@@ -1,11 +1,23 @@
-"use client"
+"use client";
 import Header from "@/app/Components/Header/Header";
 import MoodInformations from "@/app/Components/MoodInformations/MoodInformations";
 import React, { createContext, useState } from "react";
 
-export const Contex = createContext<any>({})
+interface MoodData {
+  date: string;
+  sleep: number;
+  mood: string;
+}
+interface ContextType {
+  data: MoodData[];
+  setData: React.Dispatch<React.SetStateAction<MoodData[]>>;
+}
 
-const page = () => {
+export const Context = createContext<ContextType>({
+  data: [],
+  setData: () => {},
+});
+const Page = () => {
   const [data, setData] = useState([
     { date: "Mar 31", sleep: 7, mood: "😐" },
     { date: "Apr 02", sleep: 9, mood: "😄" },
@@ -20,14 +32,14 @@ const page = () => {
     { date: "Apr 15", sleep: 9.5, mood: "😄" },
   ]);
   return (
-    <Contex.Provider value={{data,setData}}>
-          <div className="w-full h-screen py-[40px] flex flex-col items-center gap-[80px]">
-      <Header />
+    <Context.Provider value={{ data, setData }}>
+      <div className="w-full h-screen py-[40px] flex flex-col items-center gap-[80px]">
+        <Header />
 
-      <MoodInformations />
-    </div>
-    </Contex.Provider>
+        <MoodInformations />
+      </div>
+    </Context.Provider>
   );
 };
 
-export default page;
+export default Page;
