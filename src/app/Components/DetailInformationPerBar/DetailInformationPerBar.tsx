@@ -1,8 +1,18 @@
 import React from "react";
 
+interface PayloadItem {
+  payload: {
+    mood: string;
+    moodLabel?: string;
+    sleep: number;
+    reflection?: string;
+    feelings?: string[];
+  };
+}
+
 interface Props {
   active?: boolean;
-  payload?: any[];
+  payload?: PayloadItem[];
 }
 
 const DetailInformationPerBar: React.FC<Props> = ({ active, payload }) => {
@@ -33,7 +43,7 @@ const DetailInformationPerBar: React.FC<Props> = ({ active, payload }) => {
         </div>
       )}
 
-      {data.feelings?.length > 0 && (
+      {Array.isArray(data.feelings) && data.feelings.length > 0 && (
         <div className="flex flex-col ">
           <p className="text-[13px] text-[#57577B]">Tags</p>
           <p className="text-[12px] text-[#21214D]">

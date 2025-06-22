@@ -109,7 +109,7 @@ const MoodInformations = () => {
               <p className="text-[#21214D] text-[24px] font-semibold">
                 {avgSleep} hrs
               </p>
-              <p className="text-[#21214D] text-[15px]">You're doing great!</p>
+              <p className="text-[#21214D] text-[15px]">{`You're doing great!`}</p>
             </div>
           ) : (
             <div className="p-[20px] flex flex-col gap-[12px] bg-[#E0E6FA] rounded-[16px]">
