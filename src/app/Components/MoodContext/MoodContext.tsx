@@ -13,11 +13,13 @@ export interface MoodData {
 interface ContextType {
   data: MoodData[];
   setData: React.Dispatch<React.SetStateAction<MoodData[]>>;
+  hasLoggedToday: boolean;
 }
 
 export const Context = createContext<ContextType>({
   data: [],
   setData: () => {},
+  hasLoggedToday: false,
 });
 
 export const MoodProvider: React.FC<{ children: React.ReactNode }> = ({
@@ -114,8 +116,15 @@ export const MoodProvider: React.FC<{ children: React.ReactNode }> = ({
     },
   ]);
 
+  const today = new Date().toLocaleDateString("en-US", {
+    month: "short",
+    day: "2-digit",
+  });
+
+  const hasLoggedToday = data.some((entry) => entry.date === today);
+
   return (
-    <Context.Provider value={{ data, setData }}>
+    <Context.Provider value={{ data, setData, hasLoggedToday }}>
       {children}
     </Context.Provider>
   );

@@ -91,7 +91,6 @@ export default function MoodSelectModal({
 
     const updatedLogs = [...logs, newEntry];
     setLogs(updatedLogs);
-    console.log("🧠 Mood log updated:", updatedLogs);
     handleClose();
   }
 

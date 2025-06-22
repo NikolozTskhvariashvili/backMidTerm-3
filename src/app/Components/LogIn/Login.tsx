@@ -48,7 +48,7 @@ const SignIn = () => {
       );
       if (foundUser) {
         localStorage.setItem("loggedInUser", JSON.stringify(foundUser));
-        router.push("/main");
+        router.push("/onbording");
       } else {
         setFormErrors({ password: "Invalid email or password." });
       }

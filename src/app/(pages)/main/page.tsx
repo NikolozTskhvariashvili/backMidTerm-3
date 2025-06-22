@@ -6,7 +6,7 @@ import React from "react";
 const Page = () => {
   return (
     <MoodProvider>
-      <div className="w-full h-screen py-[40px] flex flex-col items-center gap-[80px]">
+      <div className="w-full min-h-screen py-[40px] flex flex-col items-center gap-[80px]">
         <Header />
         <MoodInformations />
       </div>
