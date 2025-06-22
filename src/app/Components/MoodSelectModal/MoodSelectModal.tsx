@@ -2,7 +2,7 @@
 import { useState, useContext } from "react";
 import { Dialog } from "@headlessui/react";
 import { Button } from "@/components/ui/button";
-import { Context } from "@/app/(pages)/main/Page";
+import { Context } from "@/app/Components/MoodContext/MoodContext";
 interface MoodSelectModalProps {
   LogModal: boolean;
   SetLogModal: (open: boolean) => void;

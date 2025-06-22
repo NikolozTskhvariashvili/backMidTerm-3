@@ -1,5 +1,5 @@
 "use client";
-import { Context } from "@/app/(pages)/main/Page";
+import { Context } from "@/app/Components/MoodContext/MoodContext";
 import React, { useContext } from "react";
 import {
   BarChart,
