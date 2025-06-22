@@ -11,6 +11,7 @@ import {
   Cell,
   LabelList,
 } from "recharts";
+import DetailInformationPerBar from "../DetailInformationPerBar/DetailInformationPerBar";
 
 const moodColorMap: Record<string, string> = {
   "😄": "#FFC97C",
@@ -23,6 +24,7 @@ const moodColorMap: Record<string, string> = {
 const MoodInformations = () => {
   const { data } = useContext(Context);
   const last11Data = Array.isArray(data) ? data.slice(-11) : [];
+
   return (
     <div className="flex gap-[32px]">
       <div className="flex flex-col p-[24px] gap-[24px] rounded-[16px] bg-white border border-[#E0E6FA]">
@@ -33,12 +35,10 @@ const MoodInformations = () => {
             </p>
             <p className="text-[#57577B] text-[15px]">(Last 5 Check-ins)</p>
           </div>
-
           <div className="p-[20px] flex flex-col gap-[12px] bg-[#E0E6FA] rounded-[16px]">
             <p className="text-[#21214D] text-[24px] font-semibold">
               Keep tracking!
             </p>
-
             <p className="text-[#21214D] text-[15px]">
               Log 5 check-ins to see your average mood.
             </p>
@@ -52,12 +52,10 @@ const MoodInformations = () => {
             </p>
             <p className="text-[#57577B] text-[15px]">(Last 5 Check-ins)</p>
           </div>
-
           <div className="p-[20px] flex flex-col gap-[12px] bg-[#E0E6FA] rounded-[16px]">
             <p className="text-[#21214D] text-[24px] font-semibold">
               Not enough data yet!
             </p>
-
             <p className="text-[#21214D] text-[15px]">
               Track 5 nights to view average sleep.
             </p>
@@ -71,7 +69,7 @@ const MoodInformations = () => {
           <BarChart data={last11Data} barSize={24}>
             <XAxis dataKey="date" tick={{ fontSize: 10 }} />
             <YAxis domain={[0, 10]} tickCount={6} tick={{ fontSize: 10 }} />
-            <Tooltip formatter={(value) => `${value} hrs`} />
+            <Tooltip content={<DetailInformationPerBar />} />
             <Bar dataKey="sleep" radius={[25, 25, 25, 25]}>
               {last11Data.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={moodColorMap[entry.mood]} />
@@ -79,7 +77,7 @@ const MoodInformations = () => {
               <LabelList
                 dataKey="mood"
                 position="insideTop"
-                style={{ fontSize: "14px" }}
+                style={{ fontSize: "18px" }}
               />
             </Bar>
           </BarChart>

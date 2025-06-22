@@ -102,9 +102,11 @@ export default function MoodSelectModal({
 
   function handleSubmit() {
     const newEntry = {
-      date: getFormattedDate(),
-      sleep: sleep || 0,
-      mood: mood,
+    date: getFormattedDate(),
+    mood,
+    sleep: sleep || 0,
+    reflection: dayNote,
+    feelings,   
     };
 
     const updatedLogs = [...logs, newEntry];
