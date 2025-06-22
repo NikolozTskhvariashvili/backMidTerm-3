@@ -1,14 +1,13 @@
 "use client";
 import { useState, useContext } from "react";
 import { Dialog } from "@headlessui/react";
-import { Button } from "@/components/ui/button";
 import { Context } from "@/app/Components/MoodContext/MoodContext";
-import SelectedIcon from "@/app/Common/Images/SelectedIcon";
 import CloseIcon from "@/app/Common/Images/CloseIcon";
 import MoodSelectionFirst from "../MoodSelection-1/MoodSelectionFirst";
 import MoodSelectionSecond from "../MoodSelection-2/MoodSelectionSecond";
 import MoodSelectionThird from "../MoodSelection-3/MoodSelectionThird";
 import MoodSelectionFourth from "../MoodSelection-4/MoodSelectionFourth";
+
 interface MoodSelectModalProps {
   LogModal: boolean;
   SetLogModal: (open: boolean) => void;
@@ -35,43 +34,21 @@ export default function MoodSelectModal({
   ];
 
   const feelingsList = [
-    "Joyful",
-    "Down",
-    "Anxious",
-    "Calm",
-    "Excited",
-    "Frustrated",
-    "Lonely",
-    "Grateful",
-    "Overwhelmed",
-    "Motivated",
-    "Irritable",
-    "Peaceful",
-    "Tired",
-    "Hopeful",
-    "Confident",
-    "Stressed",
-    "Content",
-    "Disappointed",
-    "Optimistic",
-    "Restless",
+    "Joyful", "Down", "Anxious", "Calm", "Excited", "Frustrated", "Lonely",
+    "Grateful", "Overwhelmed", "Motivated", "Irritable", "Peaceful", "Tired",
+    "Hopeful", "Confident", "Stressed", "Content", "Disappointed", "Optimistic", "Restless",
   ];
+
   const sleepOptions = [2, 4, 6, 8, 9];
 
   function getSleepLabel(hour: number) {
     switch (hour) {
-      case 2:
-        return "0-2";
-      case 4:
-        return "3-4";
-      case 6:
-        return "5-6";
-      case 8:
-        return "7-8";
-      case 9:
-        return "9+";
-      default:
-        return hour.toString();
+      case 2: return "0-2";
+      case 4: return "3-4";
+      case 6: return "5-6";
+      case 8: return "7-8";
+      case 9: return "9+";
+      default: return hour.toString();
     }
   }
 
@@ -101,12 +78,15 @@ export default function MoodSelectModal({
   }
 
   function handleSubmit() {
+    const selectedMood = moods.find((m) => m.emoji === mood);
+
     const newEntry = {
-    date: getFormattedDate(),
-    mood,
-    sleep: sleep || 0,
-    reflection: dayNote,
-    feelings,   
+      date: getFormattedDate(),
+      mood,
+      moodLabel: selectedMood?.label || "",
+      sleep: sleep || 0,
+      reflection: dayNote,
+      feelings,
     };
 
     const updatedLogs = [...logs, newEntry];
@@ -117,9 +97,9 @@ export default function MoodSelectModal({
 
   function CheckValidate() {
     if (mood && step === 1) setStep(step + 1);
-    if (feelings && step === 2) setStep(step + 1);
-    if (dayNote && step === 3) setStep(step + 1);
-    if (step === 4 && sleep !== null) return handleSubmit();
+    else if (feelings.length && step === 2) setStep(step + 1);
+    else if (dayNote && step === 3) setStep(step + 1);
+    else if (step === 4 && sleep !== null) handleSubmit();
   }
 
   return (
@@ -135,6 +115,7 @@ export default function MoodSelectModal({
         >
           <CloseIcon />
         </div>
+
         {step === 1 && (
           <MoodSelectionFirst
             moods={moods}
@@ -174,7 +155,7 @@ export default function MoodSelectModal({
         <div className="mt-6 flex justify-between">
           {step <= 4 && (
             <div
-              onClick={() => CheckValidate()}
+              onClick={CheckValidate}
               className={`w-[520px] rounded-[10px] text-[24px] p-[16px] flex items-center justify-center ${
                 step === 1 && !mood
                   ? "bg-[#4865DB] opacity-50 cursor-not-allowed"

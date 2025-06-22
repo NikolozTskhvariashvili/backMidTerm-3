@@ -21,13 +21,53 @@ const moodColorMap: Record<string, string> = {
   "😢": "#FF9B99",
 };
 
+const moodScoreMap: Record<string, number> = {
+  "😄": 5,
+  "🙂": 4,
+  "😐": 3,
+  "🙁": 2,
+  "😢": 1,
+};
+
+const scoreToEmoji: Record<number, string> = {
+  5: "😄",
+  4: "🙂",
+  3: "😐",
+  2: "🙁",
+  1: "😢",
+};
+
+const scoreToLabel: Record<number, string> = {
+  5: "Very Happy",
+  4: "Happy",
+  3: "Neutral",
+  2: "Sad",
+  1: "Very Sad",
+};
+
 const MoodInformations = () => {
   const { data } = useContext(Context);
   const last11Data = Array.isArray(data) ? data.slice(-11) : [];
+  const last5 = last11Data.slice(-5);
+
+  const hasEnoughData = last5.length === 5;
+
+  const avgSleep = hasEnoughData
+    ? (last5.reduce((sum, item) => sum + item.sleep, 0) / 5).toFixed(1)
+    : null;
+
+  const avgMoodScore = hasEnoughData
+    ? Math.round(
+        last5.reduce((sum, item) => sum + (moodScoreMap[item.mood] || 0), 0) / 5
+      )
+    : null;
+
+  const avgMoodEmoji = avgMoodScore ? scoreToEmoji[avgMoodScore] : null;
+  const avgMoodLabel = avgMoodScore ? scoreToLabel[avgMoodScore] : null;
 
   return (
     <div className="flex gap-[32px]">
-      <div className="flex flex-col p-[24px] gap-[24px] rounded-[16px] bg-white border border-[#E0E6FA]">
+      <div className="flex flex-col p-[24px] gap-[24px] rounded-[16px] bg-white border border-[#E0E6FA] min-w-[300px]">
         <div className="flex flex-col gap-[12px]">
           <div className="flex items-center gap-1">
             <p className="text-[#21214D] text-[20px] font-semibold">
@@ -35,14 +75,26 @@ const MoodInformations = () => {
             </p>
             <p className="text-[#57577B] text-[15px]">(Last 5 Check-ins)</p>
           </div>
-          <div className="p-[20px] flex flex-col gap-[12px] bg-[#E0E6FA] rounded-[16px]">
-            <p className="text-[#21214D] text-[24px] font-semibold">
-              Keep tracking!
-            </p>
-            <p className="text-[#21214D] text-[15px]">
-              Log 5 check-ins to see your average mood.
-            </p>
-          </div>
+          {hasEnoughData ? (
+            <div className="p-[20px] flex items-center gap-4 bg-[#E0E6FA] rounded-[16px]">
+              <span className="text-3xl">{avgMoodEmoji}</span>
+              <div>
+                <p className="text-[#21214D] text-[20px] font-semibold">
+                  {avgMoodLabel}
+                </p>
+                <p className="text-[#21214D] text-[15px]">Keep it up!</p>
+              </div>
+            </div>
+          ) : (
+            <div className="p-[20px] flex flex-col gap-[12px] bg-[#E0E6FA] rounded-[16px]">
+              <p className="text-[#21214D] text-[24px] font-semibold">
+                Keep tracking!
+              </p>
+              <p className="text-[#21214D] text-[15px]">
+                Log 5 check-ins to see your average mood.
+              </p>
+            </div>
+          )}
         </div>
 
         <div className="flex flex-col gap-[12px]">
@@ -52,14 +104,23 @@ const MoodInformations = () => {
             </p>
             <p className="text-[#57577B] text-[15px]">(Last 5 Check-ins)</p>
           </div>
-          <div className="p-[20px] flex flex-col gap-[12px] bg-[#E0E6FA] rounded-[16px]">
-            <p className="text-[#21214D] text-[24px] font-semibold">
-              Not enough data yet!
-            </p>
-            <p className="text-[#21214D] text-[15px]">
-              Track 5 nights to view average sleep.
-            </p>
-          </div>
+          {hasEnoughData ? (
+            <div className="p-[20px] flex flex-col gap-[4px] bg-[#E0E6FA] rounded-[16px]">
+              <p className="text-[#21214D] text-[24px] font-semibold">
+                {avgSleep} hrs
+              </p>
+              <p className="text-[#21214D] text-[15px]">You're doing great!</p>
+            </div>
+          ) : (
+            <div className="p-[20px] flex flex-col gap-[12px] bg-[#E0E6FA] rounded-[16px]">
+              <p className="text-[#21214D] text-[24px] font-semibold">
+                Not enough data yet!
+              </p>
+              <p className="text-[#21214D] text-[15px]">
+                Track 5 nights to view average sleep.
+              </p>
+            </div>
+          )}
         </div>
       </div>
 
