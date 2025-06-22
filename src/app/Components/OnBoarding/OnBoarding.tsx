@@ -4,11 +4,17 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
+interface User {
+  nickname?: string;
+  avatar?: string;
+  email?: string;
+  [key: string]: unknown;
+}
 const OnBoarding = () => {
   const router = useRouter();
   const [name, setName] = useState("");
   const [imageUrl, setImageUrl] = useState("");
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const stored = localStorage.getItem("loggedInUser");
@@ -100,7 +106,12 @@ const OnBoarding = () => {
               </p>
             </div>
 
-            <input className="hidden" type="file" id="image" onChange={handleImageChange} />
+            <input
+              className="hidden"
+              type="file"
+              id="image"
+              onChange={handleImageChange}
+            />
             <label
               className="py-[8px] px-[16px] border border-[#9393B7] rounded-[8px] w-fit cursor-pointer"
               htmlFor="image"

@@ -26,12 +26,9 @@ const Header = () => {
   }, [router]);
 
   function LogOut() {
-    const logOut = localStorage.removeItem("loggedInUser");
-    const loggedUser = localStorage.getItem("loggedInUser");
-    if (!loggedUser) {
-      router.push("/");
-      console.log("user deleted from localstorage");
-    }
+    localStorage.removeItem("loggedInUser");
+    router.push("/");
+    console.log("user deleted from localstorage");
   }
 
   const today = new Date().toLocaleDateString("en-US", {
@@ -40,8 +37,8 @@ const Header = () => {
   });
 
   const todayMood = data.find((entry) => entry.date === today);
-    const loggedUserRaw = localStorage.getItem("loggedInUser");
-const loggedUser = loggedUserRaw ? JSON.parse(loggedUserRaw) : null;
+  const loggedUserRaw = localStorage.getItem("loggedInUser");
+  const loggedUser = loggedUserRaw ? JSON.parse(loggedUserRaw) : null;
 
   return (
     <div className="flex flex-col items-center gap-[64px]">
@@ -71,7 +68,9 @@ const loggedUser = loggedUserRaw ? JSON.parse(loggedUserRaw) : null;
         {modal && (
           <div className="py-[12px] px-[16px] flex flex-col w-[200px] absolute right-[0px] top-[50px] rounded-[8px] bg-white shadow-lg gap-[12px]">
             <div className="flex flex-col">
-              <p className="text-[#21214D] text-[18px]">{loggedUser?.nickname}</p>
+              <p className="text-[#21214D] text-[18px]">
+                {loggedUser?.nickname}
+              </p>
               <p className="text-[#9393B7] text-[15px]">{loggedUser?.email}</p>
             </div>
 
@@ -95,7 +94,9 @@ const loggedUser = loggedUserRaw ? JSON.parse(loggedUserRaw) : null;
 
       <div className="flex flex-col justify-between w-[656px] items-center gap-[64px]">
         <div className="flex flex-col items-center justify-center gap-[10px]">
-          <p className="text-[#4865DB] text-[32px]">Hello, {loggedUser.nickname}!</p>
+          <p className="text-[#4865DB] text-[32px]">
+            Hello, {loggedUser.nickname}!
+          </p>
           <p className="text-[#21214D] text-[52px]">
             How are you feeling today?
           </p>
