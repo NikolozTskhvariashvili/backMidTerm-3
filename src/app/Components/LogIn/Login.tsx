@@ -3,6 +3,8 @@ import MoodTrackerLogo from "@/app/Common/Images/MoodTrackerLogo";
 import Link from "next/link";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { signInSchema } from "@/app/schemas/validationSchemas";
+import { ValidationError } from "yup";
 interface FormData {
   email: string;
   password: string;
@@ -13,8 +15,11 @@ interface UserType {
   password: string;
   createdAt: string;
 }
-
 const SignIn = () => {
+  const [formErrors, setFormErrors] = useState<{
+    email?: string;
+    password?: string;
+  }>({});
   const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
     email: "",
@@ -27,26 +32,34 @@ const SignIn = () => {
       [name]: value,
     }));
   };
-  const handleSubmit = () => {
-    if (!formData.email || !formData.password) {
-      alert("Please fill in all fields");
-      return;
-    }
-    const savedUsers = localStorage.getItem("tempUsers");
-    if (!savedUsers) {
-      alert("No users found. Please sign up first.");
-      return;
-    }
-    const users: UserType[] = JSON.parse(savedUsers);
-    const foundUser = users.find(
-      (user) =>
-        user.email === formData.email && user.password === formData.password
-    );
-    if (foundUser) {
-      localStorage.setItem("loggedInUser", JSON.stringify(foundUser));
-      router.push("/main");
-    } else {
-      alert("invalid email or password.");
+  const handleSubmit = async () => {
+    try {
+      await signInSchema.validate(formData, { abortEarly: false });
+      setFormErrors({});
+      const savedUsers = localStorage.getItem("tempUsers");
+      if (!savedUsers) {
+        setFormErrors({ email: "No users found. Please sign up first." });
+        return;
+      }
+      const users: UserType[] = JSON.parse(savedUsers);
+      const foundUser = users.find(
+        (user) =>
+          user.email === formData.email && user.password === formData.password
+      );
+      if (foundUser) {
+        localStorage.setItem("loggedInUser", JSON.stringify(foundUser));
+        router.push("/main");
+      } else {
+        setFormErrors({ password: "Invalid email or password." });
+      }
+    } catch (err: unknown) {
+      if (err instanceof ValidationError) {
+        const errors: { email?: string; password?: string } = {};
+        err.inner.forEach((e) => {
+          if (e.path) errors[e.path as "email" | "password"] = e.message;
+        });
+        setFormErrors(errors);
+      }
     }
   };
   return (
@@ -70,6 +83,9 @@ const SignIn = () => {
               onChange={handleInputChange}
               placeholder="name@mail.com"
             />
+            {formErrors.email && (
+              <p className="text-red-500 text-sm mt-1">{formErrors.email}</p>
+            )}
           </div>
           <div className="flex flex-col">
             <p className="text-[#21214D]  text-[18px]">Password</p>
@@ -81,6 +97,9 @@ const SignIn = () => {
               onChange={handleInputChange}
               placeholder="Password"
             />
+            {formErrors.password && (
+              <p className="text-red-500 text-sm mt-1">{formErrors.password}</p>
+            )}
           </div>
         </div>
         <div className="flex flex-col gap-[20px]">

@@ -3,7 +3,8 @@ import MoodTrackerLogo from "@/app/Common/Images/MoodTrackerLogo";
 import Link from "next/link";
 import React from "react";
 import { useState, useEffect } from "react";
-
+import { signUpSchema } from "@/app/schemas/validationSchemas";
+import { ValidationError } from "yup";
 interface User {
   id: number;
   email: string;
@@ -19,6 +20,10 @@ const SignUp = () => {
     email: "",
     password: "",
   });
+  const [formErrors, setFormErrors] = useState<{
+    email?: string;
+    password?: string;
+  }>({});
   const [savedUsers, setSavedUsers] = useState<User[]>([]);
   useEffect(() => {
     const saved = localStorage.getItem("tempUsers");
@@ -34,31 +39,34 @@ const SignUp = () => {
       [name]: value,
     }));
   };
-  const handleSubmit = () => {
-    if (!formData.email || !formData.password) {
-      alert("please fill in all fields");
-      return;
+  const handleSubmit = async () => {
+    try {
+      await signUpSchema.validate(formData, { abortEarly: false });
+      setFormErrors({});
+      const existingUsers: User[] = savedUsers;
+      if (existingUsers.find((user) => user.email === formData.email)) {
+        setFormErrors({ email: "Email already exists!" });
+        return;
+      }
+      const newUser: User = {
+        id: Date.now(),
+        email: formData.email,
+        password: formData.password,
+        createdAt: new Date().toISOString(),
+      };
+      const updatedUsers: User[] = [...existingUsers, newUser];
+      localStorage.setItem("tempUsers", JSON.stringify(updatedUsers));
+      setSavedUsers(updatedUsers);
+      setFormData({ email: "", password: "" });
+    } catch (err: unknown) {
+      if (err instanceof ValidationError) {
+        const errors: { email?: string; password?: string } = {};
+        err.inner.forEach((e) => {
+          if (e.path) errors[e.path as "email" | "password"] = e.message;
+        });
+        setFormErrors(errors);
+      }
     }
-    if (formData.password.length < 6) {
-      alert("password must be at least 6 characters");
-      return;
-    }
-    const existingUsers: User[] = savedUsers;
-    if (savedUsers.find((user) => user.email === formData.email)) {
-      alert("email already exists!");
-      return;
-    }
-    const newUser: User = {
-      id: Date.now(),
-      email: formData.email,
-      password: formData.password,
-      createdAt: new Date().toISOString(),
-    };
-    const updatedUsers: User[] = [...existingUsers, newUser];
-    localStorage.setItem("tempUsers", JSON.stringify(updatedUsers));
-    setSavedUsers(updatedUsers);
-    setFormData({ email: "", password: "" });
-    alert("Account created");
   };
   return (
     <div className="w-full h-screen flex flex-col gap-[48px] items-center justify-center">
@@ -83,6 +91,9 @@ const SignUp = () => {
               onChange={handleInputChange}
               placeholder="name@mail.com"
             />
+            {formErrors.email && (
+              <p className="text-red-500 text-sm mt-1">{formErrors.email}</p>
+            )}
           </div>
           <div className="flex flex-col">
             <p className="text-[#21214D]  text-[18px]">Password</p>
@@ -94,6 +105,9 @@ const SignUp = () => {
               onChange={handleInputChange}
               placeholder="Password"
             />
+            {formErrors.password && (
+              <p className="text-red-500 text-sm mt-1">{formErrors.password}</p>
+            )}
           </div>
         </div>
         <div className="flex flex-col gap-[20px]">
