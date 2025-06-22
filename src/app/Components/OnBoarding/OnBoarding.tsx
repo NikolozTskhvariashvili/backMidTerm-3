@@ -1,8 +1,19 @@
+"use client"
 import MoodTrackerLogo from "@/app/Common/Images/MoodTrackerLogo";
 import Image from "next/image";
-import React from "react";
+import { useRouter } from "next/navigation";
+import React, { useEffect } from "react";
 
 const OnBoarding = () => {
+
+   const router = useRouter();
+  
+    useEffect(() => {
+      const loggedUser = localStorage.getItem("loggedInUser");
+      if (!loggedUser) {
+        router.push("/");
+      }
+    }, [router]);
   return (
     <div className="flex flex-col items-center justify-center w-full h-screen">
       <MoodTrackerLogo />

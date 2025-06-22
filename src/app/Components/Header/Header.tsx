@@ -4,12 +4,31 @@ import LogOutIcon from "@/app/Common/Images/LogOutIcon";
 import MoodTrackerLogo from "@/app/Common/Images/MoodTrackerLogo";
 import SettingsIcon from "@/app/Common/Images/SettingsIcon";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import MoodSelectModal from "../MoodSelectModal/MoodSelectModal";
+import { useRouter } from "next/navigation";
 
 const Header = () => {
   const [modal, setModal] = useState(false);
   const [LogModal, SetLogModal] = useState(false);
+
+ const router = useRouter();
+
+  useEffect(() => {
+    const loggedUser = localStorage.getItem("loggedInUser");
+    if (!loggedUser) {
+      router.push("/");
+    }
+  }, [router]);
+
+  function LogOut(){
+    const logOut = localStorage.removeItem("loggedInUser")
+    const loggedUser = localStorage.getItem("loggedInUser");
+    if(!loggedUser) {
+      router.push("/")
+      console.log('user deleted from localstorage')
+    }
+  }
 
   return (
     <div className="flex flex-col items-center gap-[64px]">
@@ -50,7 +69,7 @@ const Header = () => {
               <p className="text-[#21214D] text-[15px]">Settings</p>
             </div>
 
-            <div className="flex items-center gap-[10px] cursor-pointer">
+            <div onClick={LogOut} className="flex items-center gap-[10px] cursor-pointer">
               <LogOutIcon />
               <p className="text-[#21214D] text-[15px]">Logout</p>
             </div>
