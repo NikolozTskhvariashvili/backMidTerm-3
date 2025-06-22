@@ -1,4 +1,3 @@
-"use client";
 import Header from "@/app/Components/Header/Header";
 import MoodInformations from "@/app/Components/MoodInformations/MoodInformations";
 import { MoodProvider } from "@/app/Components/MoodContext/MoodContext";

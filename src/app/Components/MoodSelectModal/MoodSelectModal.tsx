@@ -3,6 +3,12 @@ import { useState, useContext } from "react";
 import { Dialog } from "@headlessui/react";
 import { Button } from "@/components/ui/button";
 import { Context } from "@/app/Components/MoodContext/MoodContext";
+import SelectedIcon from "@/app/Common/Images/SelectedIcon";
+import CloseIcon from "@/app/Common/Images/CloseIcon";
+import MoodSelectionFirst from "../MoodSelection-1/MoodSelectionFirst";
+import MoodSelectionSecond from "../MoodSelection-2/MoodSelectionSecond";
+import MoodSelectionThird from "../MoodSelection-3/MoodSelectionThird";
+import MoodSelectionFourth from "../MoodSelection-4/MoodSelectionFourth";
 interface MoodSelectModalProps {
   LogModal: boolean;
   SetLogModal: (open: boolean) => void;
@@ -29,13 +35,26 @@ export default function MoodSelectModal({
   ];
 
   const feelingsList = [
-    "Motivated",
+    "Joyful",
+    "Down",
     "Anxious",
-    "Relaxed",
-    "Tired",
-    "Stressed",
+    "Calm",
     "Excited",
+    "Frustrated",
     "Lonely",
+    "Grateful",
+    "Overwhelmed",
+    "Motivated",
+    "Irritable",
+    "Peaceful",
+    "Tired",
+    "Hopeful",
+    "Confident",
+    "Stressed",
+    "Content",
+    "Disappointed",
+    "Optimistic",
+    "Restless",
   ];
   const sleepOptions = [2, 4, 6, 8, 9];
 
@@ -94,110 +113,74 @@ export default function MoodSelectModal({
     handleClose();
   }
 
+  function CheckValidate() {
+    if (mood && step === 1) setStep(step + 1);
+    if (feelings && step === 2) setStep(step + 1);
+    if (dayNote && step === 3) setStep(step + 1);
+    if (step === 4 && sleep !== null) return handleSubmit();
+  }
+
   return (
     <Dialog
       open={LogModal}
       onClose={handleClose}
-      className="fixed inset-0 z-50 flex items-center justify-center"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
     >
-      <Dialog.Panel className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
-        <Dialog.Title className="text-xl font-bold mb-4">
-          Log your mood
-        </Dialog.Title>
-
+      <Dialog.Panel className="relative flex flex-col w-[600px] py-[48px] px-[40px] gap-[40px] bg-white items-center justify-center rounded-[10px]">
+        <div
+          onClick={() => SetLogModal(false)}
+          className="absolute right-10 top-10 cursor-pointer"
+        >
+          <CloseIcon />
+        </div>
         {step === 1 && (
-          <div>
-            <p className="mb-3 font-medium">How was your mood today?</p>
-            <div className="space-y-2">
-              {moods.map(({ label, emoji }) => (
-                <div
-                  key={label}
-                  className={`border rounded-lg px-4 py-2 flex items-center justify-between cursor-pointer ${
-                    mood === emoji
-                      ? "border-blue-500 bg-blue-50"
-                      : "border-gray-200"
-                  }`}
-                  onClick={() => setMood(emoji)}
-                >
-                  <span>{label}</span>
-                  <span>{emoji}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+          <MoodSelectionFirst
+            moods={moods}
+            mood={mood}
+            setMood={setMood}
+            step={step}
+          />
         )}
 
-        {/* Steps 2,3,4 remain unchanged */}
-
         {step === 2 && (
-          <div>
-            <p className="mb-3 font-medium">What are you feeling?</p>
-            <div className="flex flex-wrap gap-2">
-              {feelingsList.map((feeling) => (
-                <button
-                  key={feeling}
-                  onClick={() => toggleFeeling(feeling)}
-                  className={`px-3 py-1 rounded-full border ${
-                    feelings.includes(feeling)
-                      ? "bg-blue-100 border-blue-500 text-blue-600"
-                      : "border-gray-300 text-gray-600"
-                  }`}
-                >
-                  {feeling}
-                </button>
-              ))}
-            </div>
-          </div>
+          <MoodSelectionSecond
+            step={step}
+            feelingsList={feelingsList}
+            toggleFeeling={toggleFeeling}
+            feelings={feelings}
+          />
         )}
 
         {step === 3 && (
-          <div>
-            <p className="mb-3 font-medium">Write a bit about your day</p>
-            <textarea
-              value={dayNote}
-              onChange={(e) => setDayNote(e.target.value)}
-              className="w-full border rounded-lg p-3 h-28 resize-none"
-              placeholder="Today was..."
-            />
-          </div>
+          <MoodSelectionThird
+            step={step}
+            dayNote={dayNote}
+            setDayNote={setDayNote}
+          />
         )}
 
         {step === 4 && (
-          <div>
-            <p className="mb-3 font-medium">How many hours did you sleep?</p>
-            <div className="grid grid-cols-3 gap-2">
-              {sleepOptions.map((hour) => (
-                <div
-                  key={hour}
-                  className={`border rounded-lg px-4 py-2 text-center cursor-pointer ${
-                    sleep === hour
-                      ? "border-blue-500 bg-blue-50"
-                      : "border-gray-200"
-                  }`}
-                  onClick={() => setSleep(hour)}
-                >
-                  {getSleepLabel(hour)} hrs
-                </div>
-              ))}
-            </div>
-          </div>
+          <MoodSelectionFourth
+            step={step}
+            sleep={sleep}
+            sleepOptions={sleepOptions}
+            setSleep={setSleep}
+            getSleepLabel={getSleepLabel}
+          />
         )}
 
         <div className="mt-6 flex justify-between">
-          {step > 1 && (
-            <Button onClick={() => setStep(step - 1)} variant="outline">
-              Back
-            </Button>
-          )}
-          {step < 4 ? (
-            <Button
-              onClick={() => setStep(step + 1)}
-              disabled={step === 1 && !mood}
+          {step <= 4 && (
+            <div
+              onClick={() => CheckValidate()}
+              className={`w-[520px] rounded-[10px] text-[24px] p-[16px] flex items-center justify-center ${
+                step === 1 && !mood
+                  ? "bg-[#4865DB] opacity-50 cursor-not-allowed"
+                  : "bg-[#4865DB] cursor-pointer"
+              }`}
             >
-              Continue
-            </Button>
-          ) : (
-            <Button onClick={handleSubmit}>Submit</Button>
+              <p className="text-[24px] text-white">Continue</p>
+            </div>
           )}
         </div>
       </Dialog.Panel>
