@@ -66,7 +66,7 @@ const MoodInformations = () => {
   const avgMoodLabel = avgMoodScore ? scoreToLabel[avgMoodScore] : null;
 
   return (
-    <div className="flex gap-[32px]">
+    <div className="flex gap-[32px] mr-3.5 ml-3.5 max-lg:flex-col">
       <div className="flex flex-col p-[24px] gap-[24px] rounded-[16px] bg-white border border-[#E0E6FA] min-w-[300px]">
         <div className="flex flex-col gap-[12px]">
           <div className="flex items-center gap-1">
@@ -124,7 +124,7 @@ const MoodInformations = () => {
         </div>
       </div>
 
-      <div className="p-[32px] flex flex-col gap-[32px] rounded-[16px] border border-[#E0E6FA] bg-white w-[768px] h-[379px]">
+      <div className="p-[32px] flex flex-col gap-[32px] rounded-[16px] border border-[#E0E6FA] bg-white w-full max-w-[768px] h-[379px]">
         <p className="text-base font-semibold mb-2">Mood and sleep trends</p>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={last11Data} barSize={24}>
