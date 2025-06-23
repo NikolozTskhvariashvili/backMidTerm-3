@@ -71,7 +71,7 @@ const SignUp = () => {
   return (
     <div className="w-full h-screen flex flex-col gap-[48px] items-center justify-center">
       <MoodTrackerLogo />
-      <div className="max-w-[530px] px-[40px] py-[32px] flex flex-col justify-between gap-[30px] rounded-[16px] bg-white shadow-lg">
+      <div className="max-w-[530px] px-[40px] py-[32px] flex flex-col justify-between gap-[30px] rounded-[16px] bg-white shadow-lg ml-[10px] mr-[10px]">
         <div className="flex flex-col">
           <p className="text-[#21214D] text-[32px] font-bold">
             Create an account
