@@ -84,15 +84,15 @@ const Header = () => {
           </div>
         )}
       </div>
-      <div className="flex flex-col justify-between w-[656px] max-w-full items-center gap-[64px] text-center">
+      <div className="flex flex-col justify-between items-center gap-[64px]">
         <div className="flex flex-col items-center gap-[10px]">
-          <p className="text-[#4865DB] text-[32px]">
+          <p className="text-[#4865DB] text-[24px] sm:text-[28px] lg:text-[32px]">
             Hello, {loggedUser?.nickname}!
           </p>
-          <p className="text-[#21214D] text-[52px]">
+          <p className="text-[#21214D] text-[28px] sm:text-[36px] lg:text-[44px] xl:text-[52px] text-center leading-tight">
             How are you feeling today?
           </p>
-          <p className="text-[#57577B] text-[18px]">
+          <p className="text-[#57577B] text-[16px] sm:text-[18px] text-center">
             {new Date().toLocaleDateString("en-US", {
               weekday: "long",
               year: "numeric",
@@ -102,40 +102,43 @@ const Header = () => {
           </p>
         </div>
         {hasLoggedToday ? (
-          <div className="flex flex-col xl:flex-row gap-[32px] w-[1170px] max-w-full">
-            <div className="flex gap-[32px] w-[670px] max-w-full h-[340px] border border-[#E0E6FA] rounded-[16px] bg-white p-[32px]">
-              <div className="flex flex-col justify-between">
+          <div className="flex flex-col xl:flex-row gap-[32px] w-full max-w-[1170px]">
+            <div className="flex flex-col sm:flex-row gap-[32px] w-full xl:w-[670px] min-h-[340px] border border-[#E0E6FA] rounded-[16px] bg-white p-[20px] sm:p-[32px]">
+              <div className="flex flex-col justify-between flex-1">
                 <div className="flex flex-col">
-                  <p className="text-[#21214D] text-[32px] opacity-70 font-bold">
-                    I’m feeling
+                  <p className="text-[#21214D] text-[24px] sm:text-[32px] opacity-70 font-bold">
+                    {`I'm feeling`}
                   </p>
-                  <p className="text-[#21214D] text-[32px] font-bold">
+                  <p className="text-[#21214D] text-[24px] sm:text-[32px] font-bold">
                     {todayMood?.moodLabel}
                   </p>
                 </div>
-                <div className="flex flex-col gap-[12px] w-[246px]">
+                <div className="flex flex-col gap-[12px] w-full max-w-[246px] mt-4 sm:mt-0">
                   <Qoutes />
-                  <p className="text-[#21214D] text-[18px]">
+                  <p className="text-[#21214D] text-[16px] sm:text-[18px]">
                     You are stronger than you think; the storm will pass.
                   </p>
                 </div>
               </div>
-              <div className="flex items-center justify-center">
-                <p className="text-[250px]">{todayMood?.mood}</p>
+              <div className="flex items-center justify-center flex-shrink-0">
+                <p className="text-[120px] sm:text-[180px] xl:text-[250px] leading-none">
+                  {todayMood?.mood}
+                </p>
               </div>
             </div>
-            <div className="flex flex-col gap-[20px] w-[400px] max-w-full">
+            <div className="flex flex-col gap-[20px] w-full xl:w-[400px]">
               <div className="p-[20px] flex flex-col gap-[16px] bg-white rounded-[16px] border border-[#E0E6FA]">
                 <div className="flex gap-[12px]">
                   <SleepingIcon />
                   <p className="text-[#57577B] text-[18px]">Sleep</p>
                 </div>
-
                 <div className="flex gap-2">
-                  <p className="text-[#21214D] text-[32px] font-bold">
+                  <p className="text-[#21214D] text-[28px] sm:text-[32px] font-bold">
                     {todayMood?.sleep}
                   </p>
-                  <p className="text-[#21214D] text-[32px] font-bold">hours</p>
+                  <p className="text-[#21214D] text-[28px] sm:text-[32px] font-bold">
+                    hours
+                  </p>
                 </div>
               </div>
               <div className="flex flex-col gap-[16px] rounded-[16px] border border-[#E0E6FA] bg-white p-[20px]">
@@ -145,14 +148,14 @@ const Header = () => {
                     Reflection of the day
                   </p>
                 </div>
-                <p className="w-full h-[60px] resize-none">
+                <p className="w-full min-h-[60px] text-[#21214D] text-[16px] leading-relaxed">
                   {todayMood?.reflection}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {todayMood?.feelings.map((feeling, index) => (
                     <p
                       key={index}
-                      className="text-[#57577B] text-[18px] font-medium"
+                      className="text-[#57577B] text-[16px] sm:text-[18px] font-medium"
                     >
                       #{feeling}
                     </p>
