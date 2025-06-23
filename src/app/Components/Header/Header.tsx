@@ -13,48 +13,61 @@ import SleepingIcon from "@/app/Common/Images/SleepingIcon";
 import StarsIcon from "@/app/Common/Images/StarsIcon";
 import OnBordingFields from "../OnBordingFelads/OnBordingFields";
 
+interface MoodLogEntry {
+  date: string;
+  mood: string;
+  moodLabel: string;
+  sleep: number;
+  reflection: string;
+  feelings: string[];
+}
+
 const Header = () => {
   const [modal, setModal] = useState(false);
   const [LogModal, SetLogModal] = useState(false);
   const [settingsModal, setSettingsModal] = useState(false);
-  const { data, hasLoggedToday } = useContext(Context);
+  const { data } = useContext(Context);
   const router = useRouter();
 
-  useEffect(() => {
-    const loggedUser = localStorage.getItem("loggedInUser");
-    if (!loggedUser) {
-      router.push("/");
-    }
-  }, [router]);
-
-  function LogOut() {
-    router.push("/");
-  }
+  const stored = typeof window !== "undefined" ? localStorage.getItem("moodLogs") : null;
+  const localData: MoodLogEntry[] = stored ? JSON.parse(stored) : [];
+  const mergedData: MoodLogEntry[] = Array.isArray(data) ? [...data, ...localData] : localData;
 
   const today = new Date().toLocaleDateString("en-US", {
     month: "short",
     day: "2-digit",
   });
 
-  const todayMood = data.find((entry) => entry.date === today);
+  const hasLoggedToday = mergedData.some((entry) => entry.date === today);
+  const todayMood = mergedData.find((entry) => entry.date === today);
+
   const loggedUserRaw = localStorage.getItem("loggedInUser");
   const loggedUser = loggedUserRaw ? JSON.parse(loggedUserRaw) : null;
 
+  useEffect(() => {
+    if (!loggedUser) router.push("/");
+  }, [router, loggedUser]);
+
+  function LogOut() {
+    router.push("/");
+  }
+
   return (
     <>
-{settingsModal && (
-  <div
-  className="fixed inset-0 z-50 flex items-center justify-center bg-black backdrop-blur-sm"
-  style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
->
-    <div className="w-full max-w-[530px] mx-4">
-      <OnBordingFields
-        initialUser={loggedUser}
-        onClose={() => setSettingsModal(false)}
-      />
-    </div>
-  </div>
-)}
+      {settingsModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black backdrop-blur-sm"
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+        >
+          <div className="w-full max-w-[530px] mx-4">
+            <OnBordingFields
+              initialUser={loggedUser}
+              onClose={() => setSettingsModal(false)}
+            />
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col items-center gap-[64px] w-full px-4">
         <div className="w-[1124px] max-w-full flex items-center justify-between relative">
           <MoodTrackerLogo />
@@ -73,32 +86,20 @@ const Header = () => {
               width={100}
               height={100}
             />
-            <ArrowDown
-              className={`${modal ? "rotate-180" : "rotate-0"} duration-500`}
-            />
+            <ArrowDown className={`${modal ? "rotate-180" : "rotate-0"} duration-500`} />
           </div>
           {modal && (
             <div className="py-[12px] px-[16px] flex flex-col w-[200px] absolute right-0 top-[50px] rounded-[8px] bg-white shadow-lg gap-[12px] z-40">
               <div className="flex flex-col">
-                <p className="text-[#21214D] text-[18px]">
-                  {loggedUser?.nickname}
-                </p>
-                <p className="text-[#9393B7] text-[15px]">
-                  {loggedUser?.email}
-                </p>
+                <p className="text-[#21214D] text-[18px]">{loggedUser?.nickname}</p>
+                <p className="text-[#9393B7] text-[15px]">{loggedUser?.email}</p>
               </div>
               <div className="w-full h-[1px] bg-[#9393B7]"></div>
-              <div
-                onClick={() => setSettingsModal(true)}
-                className="flex items-center gap-[10px] cursor-pointer"
-              >
+              <div onClick={() => setSettingsModal(true)} className="flex items-center gap-[10px] cursor-pointer">
                 <SettingsIcon />
                 <p className="text-[#21214D] text-[15px]">Settings</p>
               </div>
-              <div
-                onClick={LogOut}
-                className="flex items-center gap-[10px] cursor-pointer"
-              >
+              <div onClick={LogOut} className="flex items-center gap-[10px] cursor-pointer">
                 <LogOutIcon />
                 <p className="text-[#21214D] text-[15px]">Logout</p>
               </div>
@@ -106,7 +107,6 @@ const Header = () => {
           )}
         </div>
 
-        {/* Greeting & Mood */}
         <div className="flex flex-col justify-between items-center gap-[64px]">
           <div className="flex flex-col items-center gap-[10px]">
             <p className="text-[#4865DB] text-[24px] sm:text-[28px] lg:text-[32px]">
@@ -125,7 +125,6 @@ const Header = () => {
             </p>
           </div>
 
-          {/* Mood Summary */}
           {hasLoggedToday ? (
             <div className="flex flex-col xl:flex-row gap-[32px] w-full max-w-[1170px]">
               <div className="flex flex-col sm:flex-row gap-[32px] w-full xl:w-[670px] min-h-[340px] border border-[#E0E6FA] rounded-[16px] bg-white p-[20px] sm:p-[32px]">
@@ -162,23 +161,19 @@ const Header = () => {
                     <p className="text-[#21214D] text-[28px] sm:text-[32px] font-bold">
                       {todayMood?.sleep}
                     </p>
-                    <p className="text-[#21214D] text-[28px] sm:text-[32px] font-bold">
-                      hours
-                    </p>
+                    <p className="text-[#21214D] text-[28px] sm:text-[32px] font-bold">hours</p>
                   </div>
                 </div>
                 <div className="flex flex-col gap-[16px] rounded-[16px] border border-[#E0E6FA] bg-white p-[20px]">
                   <div className="flex gap-[12px]">
                     <StarsIcon />
-                    <p className="text-[#57577B] text-[18px]">
-                      Reflection of the day
-                    </p>
+                    <p className="text-[#57577B] text-[18px]">Reflection of the day</p>
                   </div>
                   <p className="w-full min-h-[60px] text-[#21214D] text-[16px] leading-relaxed">
                     {todayMood?.reflection}
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    {todayMood?.feelings.map((feeling, index) => (
+                    {todayMood?.feelings?.map((feeling, index) => (
                       <p
                         key={index}
                         className="text-[#57577B] text-[16px] sm:text-[18px] font-medium"

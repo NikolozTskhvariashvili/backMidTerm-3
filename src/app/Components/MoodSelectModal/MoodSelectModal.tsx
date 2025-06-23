@@ -77,22 +77,25 @@ export default function MoodSelectModal({
     SetLogModal(false);
   }
 
-  function handleSubmit() {
-    const selectedMood = moods.find((m) => m.emoji === mood);
+function handleSubmit() {
+  const selectedMood = moods.find((m) => m.emoji === mood);
 
-    const newEntry = {
-      date: getFormattedDate(),
-      mood,
-      moodLabel: selectedMood?.label || "",
-      sleep: sleep || 0,
-      reflection: dayNote,
-      feelings,
-    };
+  const newEntry = {
+    date: getFormattedDate(),
+    mood,
+    moodLabel: selectedMood?.label || "",
+    sleep: sleep || 0,
+    reflection: dayNote,
+    feelings,
+  };
 
-    const updatedLogs = [...logs, newEntry];
-    setLogs(updatedLogs);
-    handleClose();
-  }
+  const updatedLogs = [...logs, newEntry];
+  setLogs(updatedLogs);
+
+  localStorage.setItem("moodLogs", JSON.stringify(updatedLogs));
+
+  handleClose();
+}
 
   function CheckValidate() {
     if (mood && step === 1) setStep(step + 1);
