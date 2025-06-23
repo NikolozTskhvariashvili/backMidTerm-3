@@ -51,7 +51,7 @@ const Header = () => {
           <Image
             className="w-[40px] h-[40px] rounded-full"
             src={
-              "https://static-00.iconduck.com/assets.00/profile-user-icon-2048x2048-m41rxkoe.png"
+              loggedUser ? loggedUser.avatar : "https://static-00.iconduck.com/assets.00/profile-user-icon-2048x2048-m41rxkoe.png"
             }
             alt=""
             width={100}

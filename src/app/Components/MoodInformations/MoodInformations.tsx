@@ -124,26 +124,31 @@ const MoodInformations = () => {
         </div>
       </div>
 
-      <div className="p-[32px] flex flex-col gap-[32px] rounded-[16px] border border-[#E0E6FA] bg-white w-full max-w-[768px] h-[379px]">
-        <p className="text-base font-semibold mb-2">Mood and sleep trends</p>
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={last11Data} barSize={24}>
-            <XAxis dataKey="date" tick={{ fontSize: 10 }} />
-            <YAxis domain={[0, 10]} tickCount={6} tick={{ fontSize: 10 }} />
-            <Tooltip content={<DetailInformationPerBar />} />
-            <Bar dataKey="sleep" radius={[25, 25, 25, 25]}>
-              {last11Data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={moodColorMap[entry.mood]} />
-              ))}
-              <LabelList
-                dataKey="mood"
-                position="insideTop"
-                style={{ fontSize: "18px" }}
-              />
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+<div className="p-[32px] flex flex-col gap-[32px] rounded-[16px] border border-[#E0E6FA] bg-white w-full max-w-[768px] h-[379px] max-[1024px]:h-[450px] max-[800px]:w-[600px] max-[630px]:w-[400px] max-[430px]:w-[300px]">
+  <p className="text-base font-semibold mb-2">Mood and sleep trends</p>
+
+  <div className="max-w-[768px] overflow-hidden max-[1024px]:overflow-x-auto">
+    <div className="max-w-[768px] max-[1024px]:min-w-[900px] h-[269px]">
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={last11Data} barSize={24}>
+          <XAxis dataKey="date" tick={{ fontSize: 10 }} />
+          <YAxis domain={[0, 10]} tickCount={6} tick={{ fontSize: 10 }} />
+          <Tooltip content={<DetailInformationPerBar />} />
+          <Bar dataKey="sleep" radius={[25, 25, 25, 25]}>
+            {last11Data.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={moodColorMap[entry.mood]} />
+            ))}
+            <LabelList
+              dataKey="mood"
+              position="insideTop"
+              style={{ fontSize: "18px" }}
+            />
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  </div>
+</div>
     </div>
   );
 };
