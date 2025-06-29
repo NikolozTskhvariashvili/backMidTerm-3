@@ -1,4 +1,5 @@
 "use client";
+
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -24,16 +25,31 @@ const OnBordingFields = ({
 
   useEffect(() => {
     if (!initialUser) {
-      const stored = localStorage.getItem("loggedInUser");
-      if (!stored) {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
         router.push("/");
         return;
       }
-      const parsed: User = JSON.parse(stored);
-      setUser(parsed);
-      setName(parsed.nickname || "");
-      setImageUrl(parsed.avatar || "");
+      fetch("https://moodappserver.onrender.com/auth/current-user", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error("Unauthorized");
+          return res.json();
+        })
+        .then((user) => {
+          setUser(user);
+          setName(user.nickname || "");
+          setImageUrl(user.avatar || "");
+          localStorage.setItem("loggedInUser", JSON.stringify(user));
+        })
+        .catch(() => {
+          localStorage.removeItem("authToken");
+          localStorage.removeItem("loggedInUser");
+          router.push("/");
+        });
     } else {
+      setUser(initialUser);
       setName(initialUser.nickname || "");
       setImageUrl(initialUser.avatar || "");
     }
@@ -113,9 +129,7 @@ const OnBordingFields = ({
         <div className="flex flex-col gap-[16px]">
           <div className="flex flex-col">
             <p className="text-[#21214D] text-[18px]">Upload Image</p>
-            <p className="text-[#57577B] text-[15px]">
-              Max 250KB, PNG or JPEG
-            </p>
+            <p className="text-[#57577B] text-[15px]">Max 250KB, PNG or JPEG</p>
           </div>
 
           <input
