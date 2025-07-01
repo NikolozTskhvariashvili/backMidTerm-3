@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { useUserStore } from "../../../../store/customhooks/UseUserStore";
 
 interface User {
   nickname?: string;
@@ -21,39 +22,40 @@ const OnBordingFields = ({
   const router = useRouter();
   const [name, setName] = useState("");
   const [imageUrl, setImageUrl] = useState("");
-  const [user, setUser] = useState<User | null>(initialUser ?? null);
+  const { createUser, setCreateUser } = useUserStore();
 
-  useEffect(() => {
-    if (!initialUser) {
-      const token = localStorage.getItem("authToken");
-      if (!token) {
-        router.push("/");
-        return;
-      }
-      fetch("https://moodappserver.onrender.com/auth/current-user", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-        .then((res) => {
-          if (!res.ok) throw new Error("Unauthorized");
-          return res.json();
-        })
-        .then((user) => {
-          setUser(user);
-          setName(user.nickname || "");
-          setImageUrl(user.avatar || "");
-          localStorage.setItem("loggedInUser", JSON.stringify(user));
-        })
-        .catch(() => {
-          localStorage.removeItem("authToken");
-          localStorage.removeItem("loggedInUser");
-          router.push("/");
-        });
-    } else {
-      setUser(initialUser);
-      setName(initialUser.nickname || "");
-      setImageUrl(initialUser.avatar || "");
-    }
-  }, [initialUser, router]);
+  // console.log(createUser, "createuserrrrrrrrrrrrrrrrrrrrrrrrrr");
+  // useEffect(() => {
+  //   if (!initialUser) {
+  //     const token = localStorage.getItem("authToken");
+  //     if (!token) {
+  //       router.push("/");
+  //       return;
+  //     }
+  //     fetch("https://moodappserver.onrender.com/auth/current-user", {
+  //       headers: { Authorization: `Bearer ${token}` },
+  //     })
+  //       .then((res) => {
+  //         if (!res.ok) throw new Error("Unauthorized");
+  //         return res.json();
+  //       })
+  //       .then((user) => {
+  //         setUser(user);
+  //         setName(user.nickname || "");
+  //         setImageUrl(user.avatar || "");
+  //         localStorage.setItem("loggedInUser", JSON.stringify(user));
+  //       })
+  //       .catch(() => {
+  //         localStorage.removeItem("authToken");
+  //         localStorage.removeItem("loggedInUser");
+  //         router.push("/");
+  //       });
+  //   } else {
+  //     setUser(initialUser);
+  //     setName(initialUser.nickname || "");
+  //     setImageUrl(initialUser.avatar || "");
+  //   }
+  // }, [initialUser, router]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -71,24 +73,37 @@ const OnBordingFields = ({
     reader.readAsDataURL(file);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!name.trim()) {
       alert("Please enter your name");
       return;
     }
 
-    const updatedUser = {
-      ...user,
-      nickname: name.trim(),
-      avatar: imageUrl || user?.avatar || "",
-    };
+    const res = await fetch("http://localhost:3001/auth/sign-up", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: createUser.email,
+        password: createUser.password,
+        fullName: name,
+        image: imageUrl,
+      }),
+    });
 
-    localStorage.setItem("loggedInUser", JSON.stringify(updatedUser));
+    setCreateUser(() => ({
+      email: "",
+      password: "",
+      fullName: "",
+      image: "",
+    }));
+
+    const data = await res.json();
+    console.log(data, "dataaaaaaaaaaaaaaaaa");
 
     if (onClose) {
       onClose();
     } else {
-      router.push("/main");
+      router.push("/log-in");
     }
   };
 

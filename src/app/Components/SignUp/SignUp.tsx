@@ -6,6 +6,7 @@ import { signUpSchema } from "@/app/schemas/validationSchemas";
 import { ValidationError } from "yup";
 import MoodTrackerLogo from "@/app/Common/Images/MoodTrackerLogo";
 import Link from "next/link";
+import { useUserStore } from "../../../../store/customhooks/UseUserStore";
 
 interface FormData {
   email: string;
@@ -27,6 +28,7 @@ const SignUp = () => {
   }>({});
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const { createUser, setCreateUser } = useUserStore();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -42,20 +44,30 @@ const SignUp = () => {
       setFormErrors({});
       await signUpSchema.validate(formData, { abortEarly: false });
 
-      const res = await fetch(`${API_BASE_URL}/auth/sign-up`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setFormErrors({ general: data.message || "Sign up failed" });
-        return;
-      }
+      // const res = await fetch(`${API_BASE_URL}/auth/sign-up`, {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify(formData),
+      // });
+      // const data = await res.json();
+      // if (!res.ok) {
+      //   setFormErrors({ general: data.message || "Sign up failed" });
+      //   return;
+      // }
+
+      const email = formData.email;
+      const password = formData.password;
+
+      setCreateUser((prev) => ({
+        ...prev,
+        email,
+        password,
+      }));
+
       setIsSuccess(true);
       setFormData({ email: "", password: "" });
       setTimeout(() => {
-        router.push("/log-in");
+        router.push("/onbording");
       }, 1500);
     } catch (err: unknown) {
       if (err instanceof ValidationError) {

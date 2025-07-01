@@ -12,8 +12,6 @@ interface FormData {
   password: string;
 }
 
-const API_BASE_URL = "https://moodappserver.onrender.com";
-
 const SignIn = () => {
   const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
@@ -41,7 +39,7 @@ const SignIn = () => {
       setFormErrors({});
       await signInSchema.validate(formData, { abortEarly: false });
 
-      const res = await fetch(`${API_BASE_URL}/auth/sign-in`, {
+      const res = await fetch(`http://localhost:3001/auth/sign-in`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -56,7 +54,7 @@ const SignIn = () => {
 
       localStorage.setItem("authToken", data.token);
 
-      router.push("/onbording");
+      router.push("/main");
     } catch (err: unknown) {
       if (err instanceof ValidationError) {
         const errors: { email?: string; password?: string } = {};
