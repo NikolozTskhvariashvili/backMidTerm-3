@@ -6,6 +6,8 @@ import { signInSchema } from "@/app/schemas/validationSchemas";
 import { ValidationError } from "yup";
 import MoodTrackerLogo from "@/app/Common/Images/MoodTrackerLogo";
 import Link from "next/link";
+import toast from "react-hot-toast";
+import { setCookie } from "cookies-next";
 
 interface FormData {
   email: string;
@@ -46,6 +48,13 @@ const SignIn = () => {
       });
 
       const data = await res.json();
+      console.log(data, 'resssssssssssssssssssssssssss')
+
+      if(res.status === 201) {
+        console.log('logged succsesfully ')
+        setCookie('token', data.token , {maxAge:60*60})
+        toast.success('logged succsesfully!');
+      }
 
       if (!res.ok) {
         setFormErrors({ general: data.message || "Login failed" });
