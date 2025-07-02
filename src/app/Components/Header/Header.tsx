@@ -23,7 +23,6 @@ interface MoodLogEntry {
   feelings: string[];
 }
 
-
 const Header = () => {
   const [modal, setModal] = useState(false);
   const [LogModal, SetLogModal] = useState(false);
@@ -40,31 +39,32 @@ const Header = () => {
     ? [...data, ...localData]
     : localData;
 
+  useEffect(() => {
+    if (!user?._id) return;
 
-useEffect(() => {
-  if (!user?._id) return;            
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/${user._id}`
+        );
+        if (!res.ok) throw new Error(res.statusText);
 
-  const timer = setTimeout(async () => {
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/${user._id}`);
-      if (!res.ok) throw new Error(res.statusText);
+        const data = await res.json();
+        const todayStr = new Date().toDateString();
 
-      const data = await res.json();
-      const todayStr = new Date().toDateString();
+        const moodEntry = data?.moods?.find(
+          (m: any) => new Date(m.createdAt).toDateString() === todayStr
+        );
 
-      const moodEntry = data?.moods?.find(
-        (m: any) => new Date(m.createdAt).toDateString() === todayStr
-      );
+        setTodayMood(moodEntry ?? null);
+        setHasLogged(Boolean(moodEntry));
+      } catch (err) {
+        console.error("fetch error:", err);
+      }
+    }, 1000);
 
-      setTodayMood(moodEntry ?? null);
-      setHasLogged(Boolean(moodEntry));
-    } catch (err) {
-      console.error("fetch error:", err);
-    }
-  }, 1000);                       
-
-  return () => clearTimeout(timer);      
-}, [user?._id]);  
+    return () => clearTimeout(timer);
+  }, [user?._id]);
 
   function LogOut() {
     router.push("/");
@@ -97,7 +97,7 @@ useEffect(() => {
             <Image
               className="w-[40px] h-[40px] rounded-full"
               src={
-                user?.image.trim()
+                user?.image?.trim()
                   ? user.image
                   : "https://static-00.iconduck.com/assets.00/profile-user-icon-2048x2048-m41rxkoe.png"
               }
