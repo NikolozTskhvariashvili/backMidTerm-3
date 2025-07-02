@@ -1,5 +1,4 @@
 "use client";
-
 import { Context } from "@/app/Components/MoodContext/MoodContext";
 import React, { useContext, useEffect, useState } from "react";
 import {
@@ -15,8 +14,17 @@ import {
 import DetailInformationPerBar from "../DetailInformationPerBar/DetailInformationPerBar";
 
 interface MoodEntry {
-  createdAt?: string; 
-  date: string;        
+  createdAt?: string;
+  date: string;
+  mood: string;
+  moodLabel: string;
+  sleep: number;
+  reflection: string;
+  feelings: string[];
+}
+
+interface RawMoodEntry {
+  createdAt: string;
   mood: string;
   moodLabel: string;
   sleep: number;
@@ -62,7 +70,6 @@ const fmtDate = (iso: string) =>
 const MoodInformations = () => {
   const { data: contextData, user } = useContext(Context);
   const [mood, setMoods] = useState<MoodEntry[]>([]);
-  const [mergedData, setMergedData] = useState<MoodEntry[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -76,8 +83,7 @@ const MoodInformations = () => {
         console.error("Failed to parse moodLogs", e);
       }
     }
-
-    const merged = [...contextData, ...storedData].reduce<MoodEntry[]>(
+    const combined = [...contextData, ...storedData].reduce<MoodEntry[]>(
       (acc, current) => {
         const exists = acc.find((item) => item.date === current.date);
         return exists ? acc : [...acc, current];
@@ -85,7 +91,7 @@ const MoodInformations = () => {
       []
     );
 
-    setMergedData(merged);
+    setMoods(combined);
   }, [contextData]);
 
   useEffect(() => {
@@ -94,16 +100,17 @@ const MoodInformations = () => {
     const fetchData = async () => {
       try {
         const res = await fetch(`http://localhost:3001/users/${user._id}`);
+        if (!res.ok) throw new Error(res.statusText);
         const data = await res.json();
 
-        const formatted = data.moods.map((m: any) => ({
+        const formatted = data.moods.map((m: RawMoodEntry) => ({
           ...m,
           date: fmtDate(m.createdAt),
         }));
 
         setMoods(formatted);
-      } catch {
-        console.log("token time expired");
+      } catch (err) {
+        console.log("token time expired or fetch failed", err);
       } finally {
         setIsLoading(false);
       }
@@ -117,9 +124,7 @@ const MoodInformations = () => {
     ? (last5.reduce((s, i) => s + i.sleep, 0) / 5).toFixed(1)
     : null;
   const avgMoodScore = last5.length
-    ? Math.round(
-        last5.reduce((s, i) => s + (moodScoreMap[i.mood] || 0), 0) / 5
-      )
+    ? Math.round(last5.reduce((s, i) => s + (moodScoreMap[i.mood] || 0), 0) / 5)
     : null;
   const avgMoodEmoji = avgMoodScore ? scoreToEmoji[avgMoodScore] : null;
   const avgMoodLabel = avgMoodScore ? scoreToLabel[avgMoodScore] : null;
@@ -131,7 +136,9 @@ const MoodInformations = () => {
       <div className="flex flex-col p-[24px] gap-[24px] rounded-[16px] bg-white border border-[#E0E6FA] min-w-[300px]">
         <div className="flex flex-col gap-[12px]">
           <div className="flex items-center gap-1">
-            <p className="text-[#21214D] text-[20px] font-semibold">Average Mood</p>
+            <p className="text-[#21214D] text-[20px] font-semibold">
+              Average Mood
+            </p>
             <p className="text-[#57577B] text-[15px]">(Last 5 Check-ins)</p>
           </div>
           {last5.length === 5 ? (
@@ -146,7 +153,9 @@ const MoodInformations = () => {
             </div>
           ) : (
             <div className="p-[20px] flex flex-col gap-[12px] bg-[#E0E6FA] rounded-[16px]">
-              <p className="text-[#21214D] text-[24px] font-semibold">Keep tracking!</p>
+              <p className="text-[#21214D] text-[24px] font-semibold">
+                Keep tracking!
+              </p>
               <p className="text-[#21214D] text-[15px]">
                 Log 5 check-ins to see your average mood.
               </p>
@@ -156,13 +165,17 @@ const MoodInformations = () => {
 
         <div className="flex flex-col gap-[12px]">
           <div className="flex items-center gap-1">
-            <p className="text-[#21214D] text-[20px] font-semibold">Average Sleep</p>
+            <p className="text-[#21214D] text-[20px] font-semibold">
+              Average Sleep
+            </p>
             <p className="text-[#57577B] text-[15px]">(Last 5 Check-ins)</p>
           </div>
           {last5.length === 5 ? (
             <div className="p-[20px] flex flex-col gap-[4px] bg-[#E0E6FA] rounded-[16px]">
-              <p className="text-[#21214D] text-[24px] font-semibold">{avgSleep} hrs</p>
-              <p className="text-[#21214D] text-[15px]">You're doing great!</p>
+              <p className="text-[#21214D] text-[24px] font-semibold">
+                {avgSleep} hrs
+              </p>
+              <p className="text-[#21214D] text-[15px]">{`You're doing great!`}</p>
             </div>
           ) : (
             <div className="p-[20px] flex flex-col gap-[12px] bg-[#E0E6FA] rounded-[16px]">
@@ -188,10 +201,7 @@ const MoodInformations = () => {
                 <Tooltip content={<DetailInformationPerBar />} />
                 <Bar dataKey="sleep" radius={[25, 25, 0, 0]} width={30}>
                   {mood.map((entry, idx) => (
-                    <Cell
-                      key={idx}
-                      fill={moodColorMap[entry.mood] || "#ccc"}
-                    />
+                    <Cell key={idx} fill={moodColorMap[entry.mood] || "#ccc"} />
                   ))}
                   <LabelList
                     dataKey="mood"

@@ -13,8 +13,6 @@ interface FormData {
   password: string;
 }
 
-const API_BASE_URL = "https://moodappserver.onrender.com";
-
 const SignUp = () => {
   const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
@@ -28,7 +26,7 @@ const SignUp = () => {
   }>({});
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const { createUser, setCreateUser } = useUserStore();
+  const { setCreateUser } = useUserStore();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -43,25 +41,10 @@ const SignUp = () => {
       setIsLoading(true);
       setFormErrors({});
       await signUpSchema.validate(formData, { abortEarly: false });
-
-      // const res = await fetch(`${API_BASE_URL}/auth/sign-up`, {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify(formData),
-      // });
-      // const data = await res.json();
-      // if (!res.ok) {
-      //   setFormErrors({ general: data.message || "Sign up failed" });
-      //   return;
-      // }
-
-      const email = formData.email;
-      const password = formData.password;
-
       setCreateUser((prev) => ({
         ...prev,
-        email,
-        password,
+        email: formData.email,
+        password: formData.password,
       }));
 
       setIsSuccess(true);

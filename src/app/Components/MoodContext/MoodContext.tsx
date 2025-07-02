@@ -10,19 +10,26 @@ export interface MoodData {
   reflection: string;
 }
 
+export interface User {
+  _id: string;
+  fullName: string;
+  email: string;
+  image?: string;
+}
+
 interface ContextType {
   data: MoodData[];
   setData: React.Dispatch<React.SetStateAction<MoodData[]>>;
   hasLoggedToday: boolean;
-  user: any;
-  setUser: React.Dispatch<React.SetStateAction<any>>;
+  user: User | null;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
 }
 
 export const Context = createContext<ContextType>({
   data: [],
   setData: () => {},
   hasLoggedToday: false,
-  user: {},
+  user: null,
   setUser: () => {},
 });
 
@@ -71,7 +78,7 @@ export const MoodProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const hasLoggedToday = data.some((entry) => entry.date === today);
 
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   return (
     <Context.Provider value={{ data, setData, hasLoggedToday, user, setUser }}>
