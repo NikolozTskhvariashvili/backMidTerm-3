@@ -38,6 +38,7 @@ const Page = () => {
           setUser(data);
         }
       } catch (e) {
+        console.log(e, "error");
         deleteCookie("token");
         router.push("/");
       }

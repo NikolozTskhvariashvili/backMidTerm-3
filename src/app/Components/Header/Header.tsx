@@ -23,48 +23,43 @@ interface MoodLogEntry {
   feelings: string[];
 }
 
+interface MoodLogEntryWithCreatedAt extends MoodLogEntry {
+  createdAt: string;
+}
 
 const Header = () => {
   const [modal, setModal] = useState(false);
   const [LogModal, SetLogModal] = useState(false);
   const [settingsModal, setSettingsModal] = useState(false);
-  const { data, user } = useContext(Context);
+  const { user } = useContext(Context);
   const [haslogged, setHasLogged] = useState(false);
   const [todayMood, setTodayMood] = useState<MoodLogEntry | null>(null);
   const router = useRouter();
 
-  const stored =
-    typeof window !== "undefined" ? localStorage.getItem("moodLogs") : null;
-  const localData: MoodLogEntry[] = stored ? JSON.parse(stored) : [];
-  const mergedData: MoodLogEntry[] = Array.isArray(data)
-    ? [...data, ...localData]
-    : localData;
+  useEffect(() => {
+    if (!user?._id) return;
 
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(`http://localhost:3001/users/${user._id}`);
+        if (!res.ok) throw new Error(res.statusText);
 
-useEffect(() => {
-  if (!user?._id) return;            
+        const data = await res.json();
+        const todayStr = new Date().toDateString();
 
-  const timer = setTimeout(async () => {
-    try {
-      const res = await fetch(`http://localhost:3001/users/${user._id}`);
-      if (!res.ok) throw new Error(res.statusText);
+        const moodEntry = (data?.moods as MoodLogEntryWithCreatedAt[])?.find(
+          (m) => new Date(m.createdAt).toDateString() === todayStr
+        );
 
-      const data = await res.json();
-      const todayStr = new Date().toDateString();
+        setTodayMood(moodEntry ?? null);
+        setHasLogged(Boolean(moodEntry));
+      } catch (err) {
+        console.error("fetch error:", err);
+      }
+    }, 1000);
 
-      const moodEntry = data?.moods?.find(
-        (m: any) => new Date(m.createdAt).toDateString() === todayStr
-      );
-
-      setTodayMood(moodEntry ?? null);
-      setHasLogged(Boolean(moodEntry));
-    } catch (err) {
-      console.error("fetch error:", err);
-    }
-  }, 1000);                       
-
-  return () => clearTimeout(timer);      
-}, [user?._id]);  
+    return () => clearTimeout(timer);
+  }, [user?._id]);
 
   function LogOut() {
     router.push("/");
@@ -80,7 +75,7 @@ useEffect(() => {
         >
           <div className="w-full max-w-[530px] mx-4">
             <OnBordingFields
-              initialUser={user}
+              initialUser={user ?? undefined}
               onClose={() => setSettingsModal(false)}
             />
           </div>
@@ -97,7 +92,7 @@ useEffect(() => {
             <Image
               className="w-[40px] h-[40px] rounded-full"
               src={
-                user?.image.trim()
+                user?.image?.trim()
                   ? user.image
                   : "https://static-00.iconduck.com/assets.00/profile-user-icon-2048x2048-m41rxkoe.png"
               }
@@ -137,7 +132,7 @@ useEffect(() => {
         <div className="flex flex-col justify-between items-center gap-[64px]">
           <div className="flex flex-col items-center gap-[10px]">
             <p className="text-[#4865DB] text-[24px] sm:text-[28px] lg:text-[32px]">
-              Hello, {user?.fullName.split(" ")[0]}!
+              Hello, {user?.fullName?.split(" ")[0]}!
             </p>
             <p className="text-[#21214D] text-[28px] sm:text-[36px] lg:text-[44px] xl:text-[52px] text-center leading-tight">
               How are you feeling today?

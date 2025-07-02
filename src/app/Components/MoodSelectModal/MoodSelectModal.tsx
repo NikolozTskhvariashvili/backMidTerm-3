@@ -18,7 +18,7 @@ export default function MoodSelectModal({
   SetLogModal,
   LogModal,
 }: MoodSelectModalProps) {
-  const { data: logs, setData: setLogs, user } = useContext(Context);
+  const { user } = useContext(Context);
 
   const [step, setStep] = useState(1);
   const [mood, setMood] = useState("");
@@ -77,14 +77,6 @@ export default function MoodSelectModal({
     }
   }
 
-  // function getFormattedDate() {
-  //   const date = new Date();
-  //   return date.toLocaleDateString("en-US", {
-  //     month: "short",
-  //     day: "2-digit",
-  //   });
-  // }
-
   function toggleFeeling(feeling: string) {
     setFeelings((prev) =>
       prev.includes(feeling)
@@ -104,17 +96,12 @@ export default function MoodSelectModal({
 
   async function handleSubmit() {
     const selectedMood = moods.find((m) => m.emoji === mood);
+    if (!user || !user._id) {
+      alert("User not found, please log in again.");
+      return;
+    }
 
-    // const newEntry = {
-    //   date: getFormattedDate(),
-    //   mood,
-    //   moodLabel: selectedMood?.label || "",
-    //   sleep: sleep || 0,
-    //   reflection: dayNote,
-    //   feelings,
-    // };
-
-    const res = await fetch("http://localhost:3001/moods", {
+    await fetch("http://localhost:3001/moods", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -129,13 +116,6 @@ export default function MoodSelectModal({
         author: user._id,
       }),
     });
-
-    const data = await res.json();
-
-    // const updatedLogs = [...logs, newEntry];
-    // setLogs(updatedLogs);
-
-    // localStorage.setItem("moodLogs", JSON.stringify(updatedLogs));
 
     handleClose();
   }

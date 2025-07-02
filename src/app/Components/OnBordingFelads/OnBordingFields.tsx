@@ -2,22 +2,21 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useUserStore } from "../../../../store/customhooks/UseUserStore";
 
 interface User {
-  nickname?: string;
-  avatar?: string;
-  email?: string;
-  [key: string]: unknown;
+  _id: string;
+  email: string;
+  fullName?: string;
+  image?: string;
 }
 
 const OnBordingFields = ({
   onClose,
-  initialUser,
 }: {
   onClose?: () => void;
-  initialUser?: User;
+  initialUser?: User | null;
 }) => {
   const router = useRouter();
   const [name, setName] = useState("");
