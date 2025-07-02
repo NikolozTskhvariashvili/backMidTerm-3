@@ -77,14 +77,6 @@ export default function MoodSelectModal({
     }
   }
 
-  // function getFormattedDate() {
-  //   const date = new Date();
-  //   return date.toLocaleDateString("en-US", {
-  //     month: "short",
-  //     day: "2-digit",
-  //   });
-  // }
-
   function toggleFeeling(feeling: string) {
     setFeelings((prev) =>
       prev.includes(feeling)
@@ -104,15 +96,11 @@ export default function MoodSelectModal({
 
   async function handleSubmit() {
     const selectedMood = moods.find((m) => m.emoji === mood);
+    if (!user || !user._id) {
+      alert("User not found, please log in again.");
+      return;
+    }
 
-    // const newEntry = {
-    //   date: getFormattedDate(),
-    //   mood,
-    //   moodLabel: selectedMood?.label || "",
-    //   sleep: sleep || 0,
-    //   reflection: dayNote,
-    //   feelings,
-    // };
 
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/moods`, {
       method: "POST",
@@ -131,13 +119,6 @@ export default function MoodSelectModal({
     });
     const data = res.json()
     console.log(data, 'data')
-
-
-    // const updatedLogs = [...logs, newEntry];
-    // setLogs(updatedLogs);
-
-    // localStorage.setItem("moodLogs", JSON.stringify(updatedLogs));
-
     handleClose();
   }
 

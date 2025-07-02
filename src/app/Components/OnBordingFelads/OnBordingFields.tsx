@@ -2,59 +2,27 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React, {  useState } from "react";
+import React, { useState } from "react";
 import { useUserStore } from "../../../../store/customhooks/UseUserStore";
 
 interface User {
-  nickname?: string;
-  avatar?: string;
-  email?: string;
-  [key: string]: unknown;
+  _id: string;
+  email: string;
+  fullName?: string;
+  image?: string;
 }
 
 const OnBordingFields = ({
   onClose,
 }: {
   onClose?: () => void;
-  initialUser?: User;
+  initialUser?: User | null;
 }) => {
   const router = useRouter();
   const [name, setName] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const { createUser, setCreateUser } = useUserStore();
 
-  // console.log(createUser, "createuserrrrrrrrrrrrrrrrrrrrrrrrrr");
-  // useEffect(() => {
-  //   if (!initialUser) {
-  //     const token = localStorage.getItem("authToken");
-  //     if (!token) {
-  //       router.push("/");
-  //       return;
-  //     }
-  //     fetch("https://moodappserver.onrender.com/auth/current-user", {
-  //       headers: { Authorization: `Bearer ${token}` },
-  //     })
-  //       .then((res) => {
-  //         if (!res.ok) throw new Error("Unauthorized");
-  //         return res.json();
-  //       })
-  //       .then((user) => {
-  //         setUser(user);
-  //         setName(user.nickname || "");
-  //         setImageUrl(user.avatar || "");
-  //         localStorage.setItem("loggedInUser", JSON.stringify(user));
-  //       })
-  //       .catch(() => {
-  //         localStorage.removeItem("authToken");
-  //         localStorage.removeItem("loggedInUser");
-  //         router.push("/");
-  //       });
-  //   } else {
-  //     setUser(initialUser);
-  //     setName(initialUser.nickname || "");
-  //     setImageUrl(initialUser.avatar || "");
-  //   }
-  // }, [initialUser, router]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

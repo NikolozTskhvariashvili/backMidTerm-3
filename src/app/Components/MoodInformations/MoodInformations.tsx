@@ -1,5 +1,4 @@
 "use client";
-
 import { Context } from "@/app/Components/MoodContext/MoodContext";
 import React, { useContext, useEffect, useState } from "react";
 import {
@@ -15,8 +14,17 @@ import {
 import DetailInformationPerBar from "../DetailInformationPerBar/DetailInformationPerBar";
 
 interface MoodEntry {
-  createdAt?: string; 
-  date: string;        
+  createdAt?: string;
+  date: string;
+  mood: string;
+  moodLabel: string;
+  sleep: number;
+  reflection: string;
+  feelings: string[];
+}
+
+interface RawMoodEntry {
+  createdAt: string;
   mood: string;
   moodLabel: string;
   sleep: number;
@@ -73,14 +81,14 @@ const MoodInformations = () => {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/${user._id}`);
         const data = await res.json();
 
-        const formatted = data.moods.map((m: any) => ({
+        const formatted = data.moods.map((m: RawMoodEntry) => ({
           ...m,
           date: fmtDate(m.createdAt),
         }));
 
         setMoods(formatted);
-      } catch {
-        console.log("token time expired");
+      } catch (err) {
+        console.log("token time expired or fetch failed", err);
       } finally {
         setIsLoading(false);
       }
@@ -94,9 +102,7 @@ const MoodInformations = () => {
     ? (last5.reduce((s, i) => s + i.sleep, 0) / 5).toFixed(1)
     : null;
   const avgMoodScore = last5.length
-    ? Math.round(
-        last5.reduce((s, i) => s + (moodScoreMap[i.mood] || 0), 0) / 5
-      )
+    ? Math.round(last5.reduce((s, i) => s + (moodScoreMap[i.mood] || 0), 0) / 5)
     : null;
   const avgMoodEmoji = avgMoodScore ? scoreToEmoji[avgMoodScore] : null;
   const avgMoodLabel = avgMoodScore ? scoreToLabel[avgMoodScore] : null;
@@ -108,7 +114,9 @@ const MoodInformations = () => {
       <div className="flex flex-col p-[24px] gap-[24px] rounded-[16px] bg-white border border-[#E0E6FA] min-w-[300px]">
         <div className="flex flex-col gap-[12px]">
           <div className="flex items-center gap-1">
-            <p className="text-[#21214D] text-[20px] font-semibold">Average Mood</p>
+            <p className="text-[#21214D] text-[20px] font-semibold">
+              Average Mood
+            </p>
             <p className="text-[#57577B] text-[15px]">(Last 5 Check-ins)</p>
           </div>
           {last5.length === 5 ? (
@@ -123,7 +131,9 @@ const MoodInformations = () => {
             </div>
           ) : (
             <div className="p-[20px] flex flex-col gap-[12px] bg-[#E0E6FA] rounded-[16px]">
-              <p className="text-[#21214D] text-[24px] font-semibold">Keep tracking!</p>
+              <p className="text-[#21214D] text-[24px] font-semibold">
+                Keep tracking!
+              </p>
               <p className="text-[#21214D] text-[15px]">
                 Log 5 check-ins to see your average mood.
               </p>
@@ -133,7 +143,9 @@ const MoodInformations = () => {
 
         <div className="flex flex-col gap-[12px]">
           <div className="flex items-center gap-1">
-            <p className="text-[#21214D] text-[20px] font-semibold">Average Sleep</p>
+            <p className="text-[#21214D] text-[20px] font-semibold">
+              Average Sleep
+            </p>
             <p className="text-[#57577B] text-[15px]">(Last 5 Check-ins)</p>
           </div>
           {last5.length === 5 ? (
@@ -165,10 +177,7 @@ const MoodInformations = () => {
                 <Tooltip content={<DetailInformationPerBar />} />
                 <Bar dataKey="sleep" radius={[25, 25, 0, 0]} width={30}>
                   {mood.map((entry, idx) => (
-                    <Cell
-                      key={idx}
-                      fill={moodColorMap[entry.mood] || "#ccc"}
-                    />
+                    <Cell key={idx} fill={moodColorMap[entry.mood] || "#ccc"} />
                   ))}
                   <LabelList
                     dataKey="mood"

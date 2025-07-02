@@ -27,7 +27,7 @@ const SignUp = () => {
   }>({});
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const { setCreateUser } = useUserStore();
+  const { createUser, setCreateUser } = useUserStore();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -43,16 +43,16 @@ const SignUp = () => {
       setFormErrors({});
       await signUpSchema.validate(formData, { abortEarly: false });
 
-      // const res = await fetch(`${API_BASE_URL}/auth/sign-up`, {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify(formData),
-      // });
-      // const data = await res.json();
-      // if (!res.ok) {
-      //   setFormErrors({ general: data.message || "Sign up failed" });
-      //   return;
-      // }
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/sign-up`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setFormErrors({ general: data.message || "Sign up failed" });
+        return;
+      }
 
       const email = formData.email;
       const password = formData.password;
