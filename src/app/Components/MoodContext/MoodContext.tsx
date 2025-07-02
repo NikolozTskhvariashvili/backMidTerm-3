@@ -14,12 +14,16 @@ interface ContextType {
   data: MoodData[];
   setData: React.Dispatch<React.SetStateAction<MoodData[]>>;
   hasLoggedToday: boolean;
+  user: any;
+  setUser: React.Dispatch<React.SetStateAction<any>>;
 }
 
 export const Context = createContext<ContextType>({
   data: [],
   setData: () => {},
   hasLoggedToday: false,
+  user: {},
+  setUser: () => {},
 });
 
 export const MoodProvider: React.FC<{ children: React.ReactNode }> = ({
@@ -57,7 +61,7 @@ export const MoodProvider: React.FC<{ children: React.ReactNode }> = ({
       moodLabel: "Sad",
       feelings: ["Down", "Lonely"],
       reflection: "Missed someone today.",
-    }
+    },
   ]);
 
   const today = new Date().toLocaleDateString("en-US", {
@@ -67,8 +71,10 @@ export const MoodProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const hasLoggedToday = data.some((entry) => entry.date === today);
 
+  const [user, setUser] = useState<any>(null);
+
   return (
-    <Context.Provider value={{ data, setData, hasLoggedToday }}>
+    <Context.Provider value={{ data, setData, hasLoggedToday, user, setUser }}>
       {children}
     </Context.Provider>
   );

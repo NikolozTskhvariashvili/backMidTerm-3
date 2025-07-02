@@ -12,6 +12,7 @@ import Qoutes from "@/app/Common/Images/Qoutes";
 import SleepingIcon from "@/app/Common/Images/SleepingIcon";
 import StarsIcon from "@/app/Common/Images/StarsIcon";
 import OnBordingFields from "../OnBordingFelads/OnBordingFields";
+import { deleteCookie } from "cookies-next";
 
 interface MoodLogEntry {
   date: string;
@@ -22,34 +23,52 @@ interface MoodLogEntry {
   feelings: string[];
 }
 
+
 const Header = () => {
   const [modal, setModal] = useState(false);
   const [LogModal, SetLogModal] = useState(false);
   const [settingsModal, setSettingsModal] = useState(false);
-  const { data } = useContext(Context);
+  const { data, user } = useContext(Context);
+  const [haslogged, setHasLogged] = useState(false);
+  const [todayMood, setTodayMood] = useState<MoodLogEntry | null>(null);
   const router = useRouter();
 
-  const stored = typeof window !== "undefined" ? localStorage.getItem("moodLogs") : null;
+  const stored =
+    typeof window !== "undefined" ? localStorage.getItem("moodLogs") : null;
   const localData: MoodLogEntry[] = stored ? JSON.parse(stored) : [];
-  const mergedData: MoodLogEntry[] = Array.isArray(data) ? [...data, ...localData] : localData;
+  const mergedData: MoodLogEntry[] = Array.isArray(data)
+    ? [...data, ...localData]
+    : localData;
 
-  const today = new Date().toLocaleDateString("en-US", {
-    month: "short",
-    day: "2-digit",
-  });
 
-  const hasLoggedToday = mergedData.some((entry) => entry.date === today);
-  const todayMood = mergedData.find((entry) => entry.date === today);
+useEffect(() => {
+  if (!user?._id) return;            
 
-  const loggedUserRaw = localStorage.getItem("loggedInUser");
-  const loggedUser = loggedUserRaw ? JSON.parse(loggedUserRaw) : null;
+  const timer = setTimeout(async () => {
+    try {
+      const res = await fetch(`http://localhost:3001/users/${user._id}`);
+      if (!res.ok) throw new Error(res.statusText);
 
-  useEffect(() => {
-    if (!loggedUser) router.push("/");
-  }, [router, loggedUser]);
+      const data = await res.json();
+      const todayStr = new Date().toDateString();
+
+      const moodEntry = data?.moods?.find(
+        (m: any) => new Date(m.createdAt).toDateString() === todayStr
+      );
+
+      setTodayMood(moodEntry ?? null);
+      setHasLogged(Boolean(moodEntry));
+    } catch (err) {
+      console.error("fetch error:", err);
+    }
+  }, 1000);                       
+
+  return () => clearTimeout(timer);      
+}, [user?._id]);  
 
   function LogOut() {
     router.push("/");
+    deleteCookie("token");
   }
 
   return (
@@ -61,7 +80,7 @@ const Header = () => {
         >
           <div className="w-full max-w-[530px] mx-4">
             <OnBordingFields
-              initialUser={loggedUser}
+              initialUser={user}
               onClose={() => setSettingsModal(false)}
             />
           </div>
@@ -78,28 +97,36 @@ const Header = () => {
             <Image
               className="w-[40px] h-[40px] rounded-full"
               src={
-                loggedUser?.avatar !== ""
-                  ? loggedUser?.avatar
+                user?.image.trim()
+                  ? user.image
                   : "https://static-00.iconduck.com/assets.00/profile-user-icon-2048x2048-m41rxkoe.png"
               }
-              alt=""
+              alt="User avatar"
               width={100}
               height={100}
             />
-            <ArrowDown className={`${modal ? "rotate-180" : "rotate-0"} duration-500`} />
+            <ArrowDown
+              className={`${modal ? "rotate-180" : "rotate-0"} duration-500`}
+            />
           </div>
           {modal && (
             <div className="py-[12px] px-[16px] flex flex-col w-[200px] absolute right-0 top-[50px] rounded-[8px] bg-white shadow-lg gap-[12px] z-40">
               <div className="flex flex-col">
-                <p className="text-[#21214D] text-[18px]">{loggedUser?.nickname}</p>
-                <p className="text-[#9393B7] text-[15px]">{loggedUser?.email}</p>
+                <p className="text-[#21214D] text-[18px]">{user?.fullName}</p>
+                <p className="text-[#9393B7] text-[15px]">{user?.email}</p>
               </div>
               <div className="w-full h-[1px] bg-[#9393B7]"></div>
-              <div onClick={() => setSettingsModal(true)} className="flex items-center gap-[10px] cursor-pointer">
+              <div
+                onClick={() => setSettingsModal(true)}
+                className="flex items-center gap-[10px] cursor-pointer"
+              >
                 <SettingsIcon />
                 <p className="text-[#21214D] text-[15px]">Settings</p>
               </div>
-              <div onClick={LogOut} className="flex items-center gap-[10px] cursor-pointer">
+              <div
+                onClick={LogOut}
+                className="flex items-center gap-[10px] cursor-pointer"
+              >
                 <LogOutIcon />
                 <p className="text-[#21214D] text-[15px]">Logout</p>
               </div>
@@ -110,7 +137,7 @@ const Header = () => {
         <div className="flex flex-col justify-between items-center gap-[64px]">
           <div className="flex flex-col items-center gap-[10px]">
             <p className="text-[#4865DB] text-[24px] sm:text-[28px] lg:text-[32px]">
-              Hello, {loggedUser?.nickname}!
+              Hello, {user?.fullName.split(" ")[0]}!
             </p>
             <p className="text-[#21214D] text-[28px] sm:text-[36px] lg:text-[44px] xl:text-[52px] text-center leading-tight">
               How are you feeling today?
@@ -125,7 +152,7 @@ const Header = () => {
             </p>
           </div>
 
-          {hasLoggedToday ? (
+          {haslogged ? (
             <div className="flex flex-col xl:flex-row gap-[32px] w-full max-w-[1170px]">
               <div className="flex flex-col sm:flex-row gap-[32px] w-full xl:w-[670px] min-h-[340px] border border-[#E0E6FA] rounded-[16px] bg-white p-[20px] sm:p-[32px]">
                 <div className="flex flex-col justify-between flex-1">
@@ -161,13 +188,17 @@ const Header = () => {
                     <p className="text-[#21214D] text-[28px] sm:text-[32px] font-bold">
                       {todayMood?.sleep}
                     </p>
-                    <p className="text-[#21214D] text-[28px] sm:text-[32px] font-bold">hours</p>
+                    <p className="text-[#21214D] text-[28px] sm:text-[32px] font-bold">
+                      hours
+                    </p>
                   </div>
                 </div>
                 <div className="flex flex-col gap-[16px] rounded-[16px] border border-[#E0E6FA] bg-white p-[20px]">
                   <div className="flex gap-[12px]">
                     <StarsIcon />
-                    <p className="text-[#57577B] text-[18px]">Reflection of the day</p>
+                    <p className="text-[#57577B] text-[18px]">
+                      Reflection of the day
+                    </p>
                   </div>
                   <p className="w-full min-h-[60px] text-[#21214D] text-[16px] leading-relaxed">
                     {todayMood?.reflection}

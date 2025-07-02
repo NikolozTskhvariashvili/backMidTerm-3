@@ -7,6 +7,7 @@ import MoodSelectionFirst from "../MoodSelection-1/MoodSelectionFirst";
 import MoodSelectionSecond from "../MoodSelection-2/MoodSelectionSecond";
 import MoodSelectionThird from "../MoodSelection-3/MoodSelectionThird";
 import MoodSelectionFourth from "../MoodSelection-4/MoodSelectionFourth";
+import { getCookie } from "cookies-next";
 
 interface MoodSelectModalProps {
   LogModal: boolean;
@@ -17,13 +18,14 @@ export default function MoodSelectModal({
   SetLogModal,
   LogModal,
 }: MoodSelectModalProps) {
-  const { data: logs, setData: setLogs } = useContext(Context);
+  const { data: logs, setData: setLogs, user } = useContext(Context);
 
   const [step, setStep] = useState(1);
   const [mood, setMood] = useState("");
   const [feelings, setFeelings] = useState<string[]>([]);
   const [dayNote, setDayNote] = useState("");
   const [sleep, setSleep] = useState<number | null>(null);
+  const token = getCookie("token");
 
   const moods = [
     { label: "Very Happy", emoji: "😄" },
@@ -34,31 +36,54 @@ export default function MoodSelectModal({
   ];
 
   const feelingsList = [
-    "Joyful", "Down", "Anxious", "Calm", "Excited", "Frustrated", "Lonely",
-    "Grateful", "Overwhelmed", "Motivated", "Irritable", "Peaceful", "Tired",
-    "Hopeful", "Confident", "Stressed", "Content", "Disappointed", "Optimistic", "Restless",
+    "Joyful",
+    "Down",
+    "Anxious",
+    "Calm",
+    "Excited",
+    "Frustrated",
+    "Lonely",
+    "Grateful",
+    "Overwhelmed",
+    "Motivated",
+    "Irritable",
+    "Peaceful",
+    "Tired",
+    "Hopeful",
+    "Confident",
+    "Stressed",
+    "Content",
+    "Disappointed",
+    "Optimistic",
+    "Restless",
   ];
 
   const sleepOptions = [2, 4, 6, 8, 9];
 
   function getSleepLabel(hour: number) {
     switch (hour) {
-      case 2: return "0-2";
-      case 4: return "3-4";
-      case 6: return "5-6";
-      case 8: return "7-8";
-      case 9: return "9+";
-      default: return hour.toString();
+      case 2:
+        return "0-2";
+      case 4:
+        return "3-4";
+      case 6:
+        return "5-6";
+      case 8:
+        return "7-8";
+      case 9:
+        return "9+";
+      default:
+        return hour.toString();
     }
   }
 
-  function getFormattedDate() {
-    const date = new Date();
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "2-digit",
-    });
-  }
+  // function getFormattedDate() {
+  //   const date = new Date();
+  //   return date.toLocaleDateString("en-US", {
+  //     month: "short",
+  //     day: "2-digit",
+  //   });
+  // }
 
   function toggleFeeling(feeling: string) {
     setFeelings((prev) =>
@@ -77,25 +102,43 @@ export default function MoodSelectModal({
     SetLogModal(false);
   }
 
-function handleSubmit() {
-  const selectedMood = moods.find((m) => m.emoji === mood);
+  async function handleSubmit() {
+    const selectedMood = moods.find((m) => m.emoji === mood);
 
-  const newEntry = {
-    date: getFormattedDate(),
-    mood,
-    moodLabel: selectedMood?.label || "",
-    sleep: sleep || 0,
-    reflection: dayNote,
-    feelings,
-  };
+    // const newEntry = {
+    //   date: getFormattedDate(),
+    //   mood,
+    //   moodLabel: selectedMood?.label || "",
+    //   sleep: sleep || 0,
+    //   reflection: dayNote,
+    //   feelings,
+    // };
 
-  const updatedLogs = [...logs, newEntry];
-  setLogs(updatedLogs);
+    const res = await fetch("http://localhost:3001/moods", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        dayNote,
+        feelings,
+        mood,
+        moodLabel: selectedMood?.label || "",
+        sleep,
+        author: user._id,
+      }),
+    });
 
-  localStorage.setItem("moodLogs", JSON.stringify(updatedLogs));
+    const data = await res.json();
 
-  handleClose();
-}
+    // const updatedLogs = [...logs, newEntry];
+    // setLogs(updatedLogs);
+
+    // localStorage.setItem("moodLogs", JSON.stringify(updatedLogs));
+
+    handleClose();
+  }
 
   function CheckValidate() {
     if (mood && step === 1) setStep(step + 1);

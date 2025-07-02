@@ -1,14 +1,14 @@
 "use client";
 import Header from "@/app/Components/Header/Header";
 import MoodInformations from "@/app/Components/MoodInformations/MoodInformations";
-import { MoodProvider } from "@/app/Components/MoodContext/MoodContext";
-import { useEffect, useState } from "react";
+import { Context } from "@/app/Components/MoodContext/MoodContext";
+import { useContext, useEffect, useState } from "react";
 import { deleteCookie, getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
 
 const Page = () => {
+  const { user, setUser } = useContext(Context);
   const [mounted, setMounted] = useState(false);
-  const [user, setUser] = useState(null);
   const [token, setToken] = useState<string | null>(null);
   const router = useRouter();
 
@@ -27,14 +27,14 @@ const Page = () => {
       if (!token) return;
 
       try {
-        const res = await fetch("http://localhost:3001/current-user", {
-          method: "GET",
+        const res = await fetch("http://localhost:3001/auth/current-user", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
         const data = await res.json();
         if (res.status === 200) {
+          console.log(data, "data in main");
           setUser(data);
         }
       } catch (e) {
@@ -48,13 +48,13 @@ const Page = () => {
 
   if (!mounted) return null;
 
+  console.log("current user:", user);
+
   return (
-    <MoodProvider>
-      <div className="w-full min-h-screen py-[40px] flex flex-col items-center gap-[80px]">
-        <Header />
-        <MoodInformations />
-      </div>
-    </MoodProvider>
+    <div className="w-full min-h-screen py-[40px] flex flex-col items-center gap-[80px]">
+      <Header />
+      <MoodInformations />
+    </div>
   );
 };
 
