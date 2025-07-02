@@ -13,7 +13,6 @@ interface FormData {
   password: string;
 }
 
-const API_BASE_URL = "https://moodappserver.onrender.com";
 
 const SignUp = () => {
   const router = useRouter();
@@ -28,7 +27,7 @@ const SignUp = () => {
   }>({});
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const { createUser, setCreateUser } = useUserStore();
+  const { setCreateUser } = useUserStore();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

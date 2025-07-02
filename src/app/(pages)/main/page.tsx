@@ -27,7 +27,7 @@ const Page = () => {
       if (!token) return;
 
       try {
-        const res = await fetch("http://localhost:3001/auth/current-user", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/current-user`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

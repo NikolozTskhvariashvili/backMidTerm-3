@@ -41,7 +41,7 @@ const SignIn = () => {
       setFormErrors({});
       await signInSchema.validate(formData, { abortEarly: false });
 
-      const res = await fetch(`http://localhost:3001/auth/sign-in`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/sign-in`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

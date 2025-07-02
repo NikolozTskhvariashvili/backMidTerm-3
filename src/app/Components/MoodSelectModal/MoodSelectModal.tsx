@@ -18,7 +18,7 @@ export default function MoodSelectModal({
   SetLogModal,
   LogModal,
 }: MoodSelectModalProps) {
-  const { data: logs, setData: setLogs, user } = useContext(Context);
+  const { user } = useContext(Context);
 
   const [step, setStep] = useState(1);
   const [mood, setMood] = useState("");
@@ -114,7 +114,7 @@ export default function MoodSelectModal({
     //   feelings,
     // };
 
-    const res = await fetch("http://localhost:3001/moods", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/moods`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -129,8 +129,9 @@ export default function MoodSelectModal({
         author: user._id,
       }),
     });
+    const data = res.json()
+    console.log(data, 'data')
 
-    const data = await res.json();
 
     // const updatedLogs = [...logs, newEntry];
     // setLogs(updatedLogs);

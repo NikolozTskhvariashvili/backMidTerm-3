@@ -46,7 +46,7 @@ useEffect(() => {
 
   const timer = setTimeout(async () => {
     try {
-      const res = await fetch(`http://localhost:3001/users/${user._id}`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/${user._id}`);
       if (!res.ok) throw new Error(res.statusText);
 
       const data = await res.json();

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import { useUserStore } from "../../../../store/customhooks/UseUserStore";
 
 interface User {
@@ -14,7 +14,6 @@ interface User {
 
 const OnBordingFields = ({
   onClose,
-  initialUser,
 }: {
   onClose?: () => void;
   initialUser?: User;
@@ -79,7 +78,7 @@ const OnBordingFields = ({
       return;
     }
 
-    const res = await fetch("http://localhost:3001/auth/sign-up", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/sign-up`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

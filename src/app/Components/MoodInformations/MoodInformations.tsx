@@ -62,38 +62,15 @@ const fmtDate = (iso: string) =>
 const MoodInformations = () => {
   const { data: contextData, user } = useContext(Context);
   const [mood, setMoods] = useState<MoodEntry[]>([]);
-  const [mergedData, setMergedData] = useState<MoodEntry[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  useEffect(() => {
-    const stored = localStorage.getItem("moodLogs");
-    let storedData: MoodEntry[] = [];
-
-    if (stored) {
-      try {
-        storedData = JSON.parse(stored) as MoodEntry[];
-      } catch (e) {
-        console.error("Failed to parse moodLogs", e);
-      }
-    }
-
-    const merged = [...contextData, ...storedData].reduce<MoodEntry[]>(
-      (acc, current) => {
-        const exists = acc.find((item) => item.date === current.date);
-        return exists ? acc : [...acc, current];
-      },
-      []
-    );
-
-    setMergedData(merged);
-  }, [contextData]);
 
   useEffect(() => {
     if (!user?._id) return;
 
     const fetchData = async () => {
       try {
-        const res = await fetch(`http://localhost:3001/users/${user._id}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/${user._id}`);
         const data = await res.json();
 
         const formatted = data.moods.map((m: any) => ({
@@ -162,7 +139,7 @@ const MoodInformations = () => {
           {last5.length === 5 ? (
             <div className="p-[20px] flex flex-col gap-[4px] bg-[#E0E6FA] rounded-[16px]">
               <p className="text-[#21214D] text-[24px] font-semibold">{avgSleep} hrs</p>
-              <p className="text-[#21214D] text-[15px]">You're doing great!</p>
+              <p className="text-[#21214D] text-[15px]">Youre doing great!</p>
             </div>
           ) : (
             <div className="p-[20px] flex flex-col gap-[12px] bg-[#E0E6FA] rounded-[16px]">
