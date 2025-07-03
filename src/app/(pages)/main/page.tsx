@@ -5,6 +5,7 @@ import { Context } from "@/app/Components/MoodContext/MoodContext";
 import { useContext, useEffect, useState } from "react";
 import { deleteCookie, getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
+import Loading from "@/app/Components/Loading/Loading";
 
 const Page = () => {
   const { user, setUser } = useContext(Context);
@@ -50,6 +51,8 @@ const Page = () => {
   if (!mounted) return null;
 
   console.log("current user:", user);
+
+  if(user === null) return <Loading />
 
   return (
     <div className="w-full min-h-screen py-[40px] flex flex-col items-center gap-[80px]">

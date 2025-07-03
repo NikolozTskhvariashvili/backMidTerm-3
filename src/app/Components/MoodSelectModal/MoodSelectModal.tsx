@@ -18,7 +18,7 @@ export default function MoodSelectModal({
   SetLogModal,
   LogModal,
 }: MoodSelectModalProps) {
-  const { user } = useContext(Context);
+  const { user, setData } = useContext(Context);
 
   const [step, setStep] = useState(1);
   const [mood, setMood] = useState("");
@@ -117,7 +117,8 @@ export default function MoodSelectModal({
         author: user._id,
       }),
     });
-    const data = res.json()
+    const data = await res.json()
+    setData(data)
     console.log(data, 'data')
     handleClose();
   }
