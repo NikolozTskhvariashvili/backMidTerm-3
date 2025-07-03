@@ -82,7 +82,7 @@ const Header: React.FC = () => {
 
     load();
     return () => controller.abort();
-  }, [ContexData]);
+  }, [ContexData, user?._id]);
 
   const handleLogout = () => {
     deleteCookie("token");

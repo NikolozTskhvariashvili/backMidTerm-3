@@ -93,7 +93,7 @@ const MoodInformations: React.FC = () => {
 
     load();
     return () => controller.abort();
-  }, [ContexData]);
+  }, [ContexData, user?._id]);
 
   const last5 = mood.slice(-5);
   const avgSleep =
