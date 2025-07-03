@@ -112,7 +112,7 @@ const MoodInformations: React.FC = () => {
   if (isLoading) return <div>Loading…</div>;
 
   return (
-    <div className="flex gap-8 mr-3.5 ml-3.5 max-lg:flex-col">
+    <div className="flex max-[1100px]:gap-2.5 gap-8 mr-3.5 ml-3.5 max-lg:flex-col">
       <div className="flex flex-col p-6 gap-6 rounded-2xl bg-white border border-[#E0E6FA] min-w-[300px]">
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-1">
@@ -168,7 +168,7 @@ const MoodInformations: React.FC = () => {
         </div>
       </div>
 
-      <div className="p-8 flex flex-col gap-8 rounded-2xl border border-[#E0E6FA] bg-white w-full max-w-[768px] h-[379px] max-[1024px]:h-[450px]">
+      <div className="p-8 flex flex-col gap-8 rounded-2xl border border-[#E0E6FA] bg-white w-[700px] h-[379px] max-[1024px]:h-[450px] max-[720px]:max-w-[355px]">
         <p className="text-base font-semibold">Mood and sleep trends</p>
 
         <ResponsiveContainer width="100%" height="100%">
